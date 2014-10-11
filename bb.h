@@ -7,16 +7,11 @@
 
 typedef unsigned long long bb;
 
-extern bb SQ_PAWN[64];
 extern bb SQ_KNIGHT[64];
-extern bb SQ_BISHOP[64];
-extern bb SQ_ROOK[64];
-extern bb SQ_QUEEN[64];
 extern bb SQ_KING[64];
 
 extern bb SQ_BISHOP_6[64];
 extern bb SQ_ROOK_6[64];
-extern bb SQ_QUEEN_6[64];
 
 extern const bb MAGIC_BISHOP[64];
 extern const bb MAGIC_ROOK[64];

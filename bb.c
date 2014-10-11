@@ -1,16 +1,11 @@
 #include <stdio.h>
 #include "bb.h"
 
-bb SQ_PAWN[64];
 bb SQ_KNIGHT[64];
-bb SQ_BISHOP[64];
-bb SQ_ROOK[64];
-bb SQ_QUEEN[64];
 bb SQ_KING[64];
 
 bb SQ_BISHOP_6[64];
 bb SQ_ROOK_6[64];
-bb SQ_QUEEN_6[64];
 
 const bb MAGIC_BISHOP[64] = {
     0x010a0a1023020080L, 0x0050100083024000L, 0x8826083200800802L,
@@ -141,14 +136,10 @@ bb bishop_slide(int sq, int truncate, bb obstacles) {
 }
 
 void bb_init() {
-    // SQ_BISHOP, SQ_ROOK, SQ_QUEEN
+    // SQ_BISHOP_6, SQ_ROOK_6
     for (int sq = 0; sq < 64; sq++) {
-        SQ_BISHOP[sq] = bishop_slide(sq, 0, 0L);
         SQ_BISHOP_6[sq] = bishop_slide(sq, 1, 0L);
-        SQ_ROOK[sq] = rook_slide(sq, 0, 0L);
         SQ_ROOK_6[sq] = rook_slide(sq, 1, 0L);
-        SQ_QUEEN[sq] = SQ_BISHOP[sq] | SQ_ROOK[sq];
-        SQ_QUEEN_6[sq] = SQ_BISHOP_6[sq] | SQ_ROOK_6[sq];
     }
     // SQ_KNIGHT
     const int knight_offsets[8][2] = {
