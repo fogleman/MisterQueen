@@ -30,6 +30,7 @@ void board_set(Board *board, int sq, int piece) {
     board->squares[sq] = piece;
     if (piece) {
         bb bit = SQ(sq);
+        board->all |= bit;
         if (COLOR(piece)) {
             board->black |= bit;
             switch (PIECE(piece)) {
@@ -55,6 +56,7 @@ void board_set(Board *board, int sq, int piece) {
     }
     else {
         bb mask = ~SQ(sq);
+        board->all &= mask;
         if (COLOR(piece)) {
             board->black &= mask;
             switch (PIECE(piece)) {

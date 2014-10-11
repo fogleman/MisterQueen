@@ -19,6 +19,7 @@
 
 typedef struct {
     int squares[64];
+    bb all;
     bb white;
     bb black;
     bb white_pawns;

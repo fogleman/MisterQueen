@@ -87,10 +87,10 @@ bb ATTACK_ROOK[102400];
 
 int bb_squares(bb value, int squares[64]) {
     int i = 0;
+    int sq;
     while (value) {
-        int sq = LSB(value);
+        POP_LSB(sq, value);
         squares[i++] = sq;
-        value &= ~SQ(sq);
     }
     return i;
 }
