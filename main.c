@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 #include "bb.h"
 #include "board.h"
@@ -7,18 +8,28 @@
 int main(int argc, char **argv) {
     srand(time(NULL));
     bb_init();
-    bb obstacles = 0;
-    for (int i = 0; i < 20; i++) {
-        obstacles |= 1L << (rand() % 64);
-    }
-    bb_print(obstacles);
-    bb moves = sq_queen(0, obstacles);
-    bb_print(moves);
     Board board;
     board_reset(&board);
     board_print(&board);
-    bb_print(board.white_kings);
-    bb_print(board.black_kings);
-    gen_white_pawn_moves(&board);
+    Move moves[256];
+    int count;
+    count = gen_white_pawn_moves(&board, moves);
+    printf("%d\n", count);
+    count = gen_white_knight_moves(&board, moves);
+    printf("%d\n", count);
+    count = gen_white_bishop_moves(&board, moves);
+    printf("%d\n", count);
+    count = gen_white_rook_moves(&board, moves);
+    printf("%d\n", count);
+    count = gen_white_queen_moves(&board, moves);
+    printf("%d\n", count);
+    count = gen_white_king_moves(&board, moves);
+    printf("%d\n", count);
+    count = gen_white_moves(&board, moves);
+    printf("%d\n", count);
+    for (int i = 0; i < count; i++) {
+        Move *move = moves + i;
+        printf("%2d => %2d\n", move->src, move->dst);
+    }
     return 0;
 }
