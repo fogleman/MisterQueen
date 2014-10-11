@@ -3,6 +3,7 @@
 #include <time.h>
 #include "bb.h"
 #include "board.h"
+#include "gen.h"
 #include "move.h"
 
 int main(int argc, char **argv) {
@@ -13,17 +14,16 @@ int main(int argc, char **argv) {
     board_print(&board);
     Move moves[256];
     int count;
-    count = gen_white_moves(&board, moves);
-    printf("%d\n", count);
-    for (int i = 0; i < count; i++) {
-        Move *move = moves + i;
-        printf("%2d => %2d\n", move->src, move->dst);
-    }
-    count = gen_black_moves(&board, moves);
-    printf("%d\n", count);
-    for (int i = 0; i < count; i++) {
-        Move *move = moves + i;
-        printf("%2d => %2d\n", move->src, move->dst);
+    for (int i = 0; i < 10; i++) {
+        if (i % 2 == 0) {
+            count = gen_white_moves(&board, moves);
+        }
+        else {
+            count = gen_black_moves(&board, moves);
+        }
+        Move move = moves[rand() % count];
+        do_move(&board, &move);
+        board_print(&board);
     }
     return 0;
 }

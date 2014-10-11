@@ -27,7 +27,34 @@ void board_reset(Board *board) {
 }
 
 void board_set(Board *board, int sq, int piece) {
+    int previous = board->squares[sq];
     board->squares[sq] = piece;
+    if (previous) {
+        bb mask = ~SQ(sq);
+        board->all &= mask;
+        if (COLOR(previous)) {
+            board->black &= mask;
+            switch (PIECE(previous)) {
+                case PAWN:   board->black_pawns &= mask; break;
+                case KNIGHT: board->black_knights &= mask; break;
+                case BISHOP: board->black_bishops &= mask; break;
+                case ROOK:   board->black_rooks &= mask; break;
+                case QUEEN:  board->black_queens &= mask; break;
+                case KING:   board->black_kings &= mask; break;
+            }
+        }
+        else {
+            board->white &= mask;
+            switch (PIECE(previous)) {
+                case PAWN:   board->white_pawns &= mask; break;
+                case KNIGHT: board->white_knights &= mask; break;
+                case BISHOP: board->white_bishops &= mask; break;
+                case ROOK:   board->white_rooks &= mask; break;
+                case QUEEN:  board->white_queens &= mask; break;
+                case KING:   board->white_kings &= mask; break;
+            }
+        }
+    }
     if (piece) {
         bb bit = SQ(sq);
         board->all |= bit;
@@ -51,32 +78,6 @@ void board_set(Board *board, int sq, int piece) {
                 case ROOK:   board->white_rooks |= bit; break;
                 case QUEEN:  board->white_queens |= bit; break;
                 case KING:   board->white_kings |= bit; break;
-            }
-        }
-    }
-    else {
-        bb mask = ~SQ(sq);
-        board->all &= mask;
-        if (COLOR(piece)) {
-            board->black &= mask;
-            switch (PIECE(piece)) {
-                case PAWN:   board->black_pawns &= mask; break;
-                case KNIGHT: board->black_knights &= mask; break;
-                case BISHOP: board->black_bishops &= mask; break;
-                case ROOK:   board->black_rooks &= mask; break;
-                case QUEEN:  board->black_queens &= mask; break;
-                case KING:   board->black_kings &= mask; break;
-            }
-        }
-        else {
-            board->white &= mask;
-            switch (PIECE(piece)) {
-                case PAWN:   board->white_pawns &= mask; break;
-                case KNIGHT: board->white_knights &= mask; break;
-                case BISHOP: board->white_bishops &= mask; break;
-                case ROOK:   board->white_rooks &= mask; break;
-                case QUEEN:  board->white_queens &= mask; break;
-                case KING:   board->white_kings &= mask; break;
             }
         }
     }
