@@ -4,9 +4,6 @@
 
 void board_reset(Board *board) {
     memset(board, 0, sizeof(Board));
-    for (int sq = 0; sq < 64; sq++) {
-        board_set(board, sq, EMPTY);
-    }
     for (int file = 0; file < 8; file++) {
         board_set(board, RF(1, file), WHITE | PAWN);
         board_set(board, RF(6, file), BLACK | PAWN);
@@ -58,20 +55,28 @@ void board_set(Board *board, int sq, int piece) {
     }
     else {
         bb mask = ~SQ(sq);
-        board->white &= mask;
-        board->black &= mask;
-        board->white_pawns &= mask;
-        board->black_pawns &= mask;
-        board->white_knights &= mask;
-        board->black_knights &= mask;
-        board->white_bishops &= mask;
-        board->black_bishops &= mask;
-        board->white_rooks &= mask;
-        board->black_rooks &= mask;
-        board->white_queens &= mask;
-        board->black_queens &= mask;
-        board->white_kings &= mask;
-        board->black_kings &= mask;
+        if (COLOR(piece)) {
+            board->black &= mask;
+            switch (PIECE(piece)) {
+                case PAWN:   board->black_pawns &= mask; break;
+                case KNIGHT: board->black_knights &= mask; break;
+                case BISHOP: board->black_bishops &= mask; break;
+                case ROOK:   board->black_rooks &= mask; break;
+                case QUEEN:  board->black_queens &= mask; break;
+                case KING:   board->black_kings &= mask; break;
+            }
+        }
+        else {
+            board->white &= mask;
+            switch (PIECE(piece)) {
+                case PAWN:   board->white_pawns &= mask; break;
+                case KNIGHT: board->white_knights &= mask; break;
+                case BISHOP: board->white_bishops &= mask; break;
+                case ROOK:   board->white_rooks &= mask; break;
+                case QUEEN:  board->white_queens &= mask; break;
+                case KING:   board->white_kings &= mask; break;
+            }
+        }
     }
 }
 

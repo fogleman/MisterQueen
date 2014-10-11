@@ -2,6 +2,7 @@
 #include <time.h>
 #include "bb.h"
 #include "board.h"
+#include "move.h"
 
 int main(int argc, char **argv) {
     srand(time(NULL));
@@ -16,7 +17,8 @@ int main(int argc, char **argv) {
     Board board;
     board_reset(&board);
     board_print(&board);
-    bb_print(board.white_knights);
-    bb_print(board.black_knights);
+    bb_print(board.white_kings);
+    bb_print(board.black_kings);
+    gen_white_pawn_moves(&board);
     return 0;
 }
