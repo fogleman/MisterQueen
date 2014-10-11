@@ -191,6 +191,10 @@ int gen_white_attacks(Board *board, Move *moves, bb mask) {
     return moves - ptr;
 }
 
+int gen_white_checks(Board *board, Move *moves) {
+    return gen_white_attacks(board, moves, board->black_kings);
+}
+
 // black move generators
 int gen_black_pawn_moves(Board *board, Move *moves) {
     Move *ptr = moves;
@@ -307,4 +311,8 @@ int gen_black_attacks(Board *board, Move *moves, bb mask) {
     moves += gen_black_queen_attacks(board, moves, mask);
     moves += gen_black_king_attacks(board, moves, mask);
     return moves - ptr;
+}
+
+int gen_black_checks(Board *board, Move *moves) {
+    return gen_black_attacks(board, moves, board->white_kings);
 }
