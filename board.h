@@ -14,10 +14,25 @@
 #define QUEEN 0x05
 #define KING 0x06
 
+#define PIECE(x) ((x) & 0x0f)
+#define COLOR(x) ((x) & 0x10)
+
 typedef struct {
     int squares[64];
     bb white;
     bb black;
+    bb white_pawns;
+    bb black_pawns;
+    bb white_knights;
+    bb black_knights;
+    bb white_bishops;
+    bb black_bishops;
+    bb white_rooks;
+    bb black_rooks;
+    bb white_queens;
+    bb black_queens;
+    bb white_kings;
+    bb black_kings;
 } Board;
 
 void board_reset(Board *board);

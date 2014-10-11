@@ -16,5 +16,7 @@ int main(int argc, char **argv) {
     Board board;
     board_reset(&board);
     board_print(&board);
+    bb_print(board.white_knights);
+    bb_print(board.black_knights);
     return 0;
 }
