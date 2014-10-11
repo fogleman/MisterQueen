@@ -138,11 +138,11 @@ int gen_white_moves(Board *board, Move *moves) {
 }
 
 // white attack generators
-int gen_white_pawn_attacks(Board *board, Move *moves) {
+int gen_white_pawn_attacks(Board *board, Move *moves, bb mask) {
     Move *ptr = moves;
     bb pawns = board->white_pawns;
-    bb a1 = ((pawns & 0x7f7f7f7f7f7f7f7fL) << 7) & board->black;
-    bb a2 = ((pawns & 0xfefefefefefefefeL) << 9) & board->black;
+    bb a1 = ((pawns & 0x7f7f7f7f7f7f7f7fL) << 7) & mask;
+    bb a2 = ((pawns & 0xfefefefefefefefeL) << 9) & mask;
     int sq;
     while (a1) {
         POP_LSB(sq, a1);
@@ -155,39 +155,39 @@ int gen_white_pawn_attacks(Board *board, Move *moves) {
     return moves - ptr;
 }
 
-int gen_white_knight_attacks(Board *board, Move *moves) {
+int gen_white_knight_attacks(Board *board, Move *moves, bb mask) {
     return gen_knight_moves(
-        moves, board->white_knights, board->black);
+        moves, board->white_knights, mask);
 }
 
-int gen_white_bishop_attacks(Board *board, Move *moves) {
+int gen_white_bishop_attacks(Board *board, Move *moves, bb mask) {
     return gen_bishop_moves(
-        moves, board->white_bishops, board->black, board->all);
+        moves, board->white_bishops, mask, board->all);
 }
 
-int gen_white_rook_attacks(Board *board, Move *moves) {
+int gen_white_rook_attacks(Board *board, Move *moves, bb mask) {
     return gen_rook_moves(
-        moves, board->white_rooks, board->black, board->all);
+        moves, board->white_rooks, mask, board->all);
 }
 
-int gen_white_queen_attacks(Board *board, Move *moves) {
+int gen_white_queen_attacks(Board *board, Move *moves, bb mask) {
     return gen_queen_moves(
-        moves, board->white_queens, board->black, board->all);
+        moves, board->white_queens, mask, board->all);
 }
 
-int gen_white_king_attacks(Board *board, Move *moves) {
+int gen_white_king_attacks(Board *board, Move *moves, bb mask) {
     return gen_king_moves(
-        moves, board->white_kings, board->black);
+        moves, board->white_kings, mask);
 }
 
-int gen_white_attacks(Board *board, Move *moves) {
+int gen_white_attacks(Board *board, Move *moves, bb mask) {
     Move *ptr = moves;
-    moves += gen_white_pawn_attacks(board, moves);
-    moves += gen_white_knight_attacks(board, moves);
-    moves += gen_white_bishop_attacks(board, moves);
-    moves += gen_white_rook_attacks(board, moves);
-    moves += gen_white_queen_attacks(board, moves);
-    moves += gen_white_king_attacks(board, moves);
+    moves += gen_white_pawn_attacks(board, moves, mask);
+    moves += gen_white_knight_attacks(board, moves, mask);
+    moves += gen_white_bishop_attacks(board, moves, mask);
+    moves += gen_white_rook_attacks(board, moves, mask);
+    moves += gen_white_queen_attacks(board, moves, mask);
+    moves += gen_white_king_attacks(board, moves, mask);
     return moves - ptr;
 }
 
@@ -256,11 +256,11 @@ int gen_black_moves(Board *board, Move *moves) {
 }
 
 // black attack generators
-int gen_black_pawn_attacks(Board *board, Move *moves) {
+int gen_black_pawn_attacks(Board *board, Move *moves, bb mask) {
     Move *ptr = moves;
     bb pawns = board->black_pawns;
-    bb a1 = ((pawns & 0x7f7f7f7f7f7f7f7fL) >> 9) & board->white;
-    bb a2 = ((pawns & 0xfefefefefefefefeL) >> 7) & board->white;
+    bb a1 = ((pawns & 0x7f7f7f7f7f7f7f7fL) >> 9) & mask;
+    bb a2 = ((pawns & 0xfefefefefefefefeL) >> 7) & mask;
     int sq;
     while (a1) {
         POP_LSB(sq, a1);
@@ -273,38 +273,38 @@ int gen_black_pawn_attacks(Board *board, Move *moves) {
     return moves - ptr;
 }
 
-int gen_black_knight_attacks(Board *board, Move *moves) {
+int gen_black_knight_attacks(Board *board, Move *moves, bb mask) {
     return gen_knight_moves(
-        moves, board->black_knights, board->white);
+        moves, board->black_knights, mask);
 }
 
-int gen_black_bishop_attacks(Board *board, Move *moves) {
+int gen_black_bishop_attacks(Board *board, Move *moves, bb mask) {
     return gen_bishop_moves(
-        moves, board->black_bishops, board->white, board->all);
+        moves, board->black_bishops, mask, board->all);
 }
 
-int gen_black_rook_attacks(Board *board, Move *moves) {
+int gen_black_rook_attacks(Board *board, Move *moves, bb mask) {
     return gen_rook_moves(
-        moves, board->black_rooks, board->white, board->all);
+        moves, board->black_rooks, mask, board->all);
 }
 
-int gen_black_queen_attacks(Board *board, Move *moves) {
+int gen_black_queen_attacks(Board *board, Move *moves, bb mask) {
     return gen_queen_moves(
-        moves, board->black_queens, board->white, board->all);
+        moves, board->black_queens, mask, board->all);
 }
 
-int gen_black_king_attacks(Board *board, Move *moves) {
+int gen_black_king_attacks(Board *board, Move *moves, bb mask) {
     return gen_king_moves(
-        moves, board->black_kings, board->white);
+        moves, board->black_kings, mask);
 }
 
-int gen_black_attacks(Board *board, Move *moves) {
+int gen_black_attacks(Board *board, Move *moves, bb mask) {
     Move *ptr = moves;
-    moves += gen_black_pawn_attacks(board, moves);
-    moves += gen_black_knight_attacks(board, moves);
-    moves += gen_black_bishop_attacks(board, moves);
-    moves += gen_black_rook_attacks(board, moves);
-    moves += gen_black_queen_attacks(board, moves);
-    moves += gen_black_king_attacks(board, moves);
+    moves += gen_black_pawn_attacks(board, moves, mask);
+    moves += gen_black_knight_attacks(board, moves, mask);
+    moves += gen_black_bishop_attacks(board, moves, mask);
+    moves += gen_black_rook_attacks(board, moves, mask);
+    moves += gen_black_queen_attacks(board, moves, mask);
+    moves += gen_black_king_attacks(board, moves, mask);
     return moves - ptr;
 }
