@@ -22,6 +22,14 @@ int gen_white_queen_moves(Board *board, Move *moves);
 int gen_white_king_moves(Board *board, Move *moves);
 int gen_white_moves(Board *board, Move *moves);
 
+int gen_white_pawn_attacks(Board *board, Move *moves);
+int gen_white_knight_attacks(Board *board, Move *moves);
+int gen_white_bishop_attacks(Board *board, Move *moves);
+int gen_white_rook_attacks(Board *board, Move *moves);
+int gen_white_queen_attacks(Board *board, Move *moves);
+int gen_white_king_attacks(Board *board, Move *moves);
+int gen_white_attacks(Board *board, Move *moves);
+
 int gen_black_pawn_moves(Board *board, Move *moves);
 int gen_black_knight_moves(Board *board, Move *moves);
 int gen_black_bishop_moves(Board *board, Move *moves);
@@ -29,5 +37,13 @@ int gen_black_rook_moves(Board *board, Move *moves);
 int gen_black_queen_moves(Board *board, Move *moves);
 int gen_black_king_moves(Board *board, Move *moves);
 int gen_black_moves(Board *board, Move *moves);
+
+int gen_black_pawn_attacks(Board *board, Move *moves);
+int gen_black_knight_attacks(Board *board, Move *moves);
+int gen_black_bishop_attacks(Board *board, Move *moves);
+int gen_black_rook_attacks(Board *board, Move *moves);
+int gen_black_queen_attacks(Board *board, Move *moves);
+int gen_black_king_attacks(Board *board, Move *moves);
+int gen_black_attacks(Board *board, Move *moves);
 
 #endif
