@@ -6,6 +6,8 @@
 typedef struct {
     int src;
     int dst;
+    int piece;
+    int capture;
 } Move;
 
 void do_move(Board *board, Move *move);
