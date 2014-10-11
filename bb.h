@@ -1,3 +1,6 @@
+#ifndef BB_H
+#define BB_H
+
 #define LSB(x) (__builtin_ctzll(x))
 #define MSB(x) (__builtin_clzll(x))
 #define BITS(x) (__builtin_popcountll(x))
@@ -31,3 +34,5 @@ void bb_print(bb value);
 bb sq_bishop(int sq, bb obstacles);
 bb sq_rook(int sq, bb obstacles);
 bb sq_queen(int sq, bb obstacles);
+
+#endif

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "bb.h"
+#include "board.h"
 
 int main(int argc, char **argv) {
     srand(time(NULL));
@@ -12,5 +13,8 @@ int main(int argc, char **argv) {
     bb_print(obstacles);
     bb moves = sq_queen(0, obstacles);
     bb_print(moves);
+    Board board;
+    board_reset(&board);
+    board_print(&board);
     return 0;
 }
