@@ -6,13 +6,14 @@
 #include "board.h"
 #include "gen.h"
 #include "move.h"
+#include "perft.h"
 
 void random_game() {
     Board board;
     board_reset(&board);
     Move moves[256];
     int move_count;
-    Move list[256];
+    // Move list[256];
     for (int i = 0; i < 50; i++) {
         if (i % 2 == 0) {
             move_count = gen_white_moves(&board, moves);
@@ -25,18 +26,18 @@ void random_game() {
         }
         Move move = moves[rand() % move_count];
         do_move(&board, &move);
-        memcpy(&list[i], &move, sizeof(Move));
+        // memcpy(&list[i], &move, sizeof(Move));
     }
-    board_print(&board);
-    for (int i = 49; i >= 0; i--) {
-        Move move = list[i];
-        undo_move(&board, &move);
-    }
-    board_print(&board);
+    // board_print(&board);
+    // for (int i = 49; i >= 0; i--) {
+    //     Move move = list[i];
+    //     undo_move(&board, &move);
+    // }
+    // board_print(&board);
 }
 
 void random_games() {
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 200000; i++) {
         random_game();
     }
 }
@@ -44,7 +45,8 @@ void random_games() {
 int main(int argc, char **argv) {
     srand(time(NULL));
     bb_init();
-    random_games();
+    perft_test();
+    // random_games();
     // Board board;
     // board_reset(&board);
     // board_print(&board);

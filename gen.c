@@ -79,8 +79,8 @@ int gen_white_pawn_moves(Board *board, Move *moves) {
     bb pawns = board->white_pawns;
     bb p1 = (pawns << 8) & ~board->all;
     bb p2 = ((p1 & 0x0000000000ff0000L) << 8) & ~board->all;
-    bb a1 = ((pawns & 0x7f7f7f7f7f7f7f7fL) << 7) & board->black;
-    bb a2 = ((pawns & 0xfefefefefefefefeL) << 9) & board->black;
+    bb a1 = ((pawns & 0xfefefefefefefefeL) << 7) & board->black;
+    bb a2 = ((pawns & 0x7f7f7f7f7f7f7f7fL) << 9) & board->black;
     int sq;
     while (p1) {
         POP_LSB(sq, p1);
@@ -141,8 +141,8 @@ int gen_white_moves(Board *board, Move *moves) {
 int gen_white_pawn_attacks(Board *board, Move *moves, bb mask) {
     Move *ptr = moves;
     bb pawns = board->white_pawns;
-    bb a1 = ((pawns & 0x7f7f7f7f7f7f7f7fL) << 7) & mask;
-    bb a2 = ((pawns & 0xfefefefefefefefeL) << 9) & mask;
+    bb a1 = ((pawns & 0xfefefefefefefefeL) << 7) & mask;
+    bb a2 = ((pawns & 0x7f7f7f7f7f7f7f7fL) << 9) & mask;
     int sq;
     while (a1) {
         POP_LSB(sq, a1);
@@ -205,8 +205,8 @@ int gen_black_pawn_moves(Board *board, Move *moves) {
     bb pawns = board->black_pawns;
     bb p1 = (pawns >> 8) & ~board->all;
     bb p2 = ((p1 & 0x0000ff0000000000L) >> 8) & ~board->all;
-    bb a1 = ((pawns & 0x7f7f7f7f7f7f7f7fL) >> 9) & board->white;
-    bb a2 = ((pawns & 0xfefefefefefefefeL) >> 7) & board->white;
+    bb a1 = ((pawns & 0x7f7f7f7f7f7f7f7fL) >> 7) & board->white;
+    bb a2 = ((pawns & 0xfefefefefefefefeL) >> 9) & board->white;
     int sq;
     while (p1) {
         POP_LSB(sq, p1);
@@ -218,11 +218,11 @@ int gen_black_pawn_moves(Board *board, Move *moves) {
     }
     while (a1) {
         POP_LSB(sq, a1);
-        EMIT_MOVE(moves, sq + 9, sq);
+        EMIT_MOVE(moves, sq + 7, sq);
     }
     while (a2) {
         POP_LSB(sq, a2);
-        EMIT_MOVE(moves, sq + 7, sq);
+        EMIT_MOVE(moves, sq + 9, sq);
     }
     return moves - ptr;
 }
@@ -267,16 +267,16 @@ int gen_black_moves(Board *board, Move *moves) {
 int gen_black_pawn_attacks(Board *board, Move *moves, bb mask) {
     Move *ptr = moves;
     bb pawns = board->black_pawns;
-    bb a1 = ((pawns & 0x7f7f7f7f7f7f7f7fL) >> 9) & mask;
-    bb a2 = ((pawns & 0xfefefefefefefefeL) >> 7) & mask;
+    bb a1 = ((pawns & 0x7f7f7f7f7f7f7f7fL) >> 7) & mask;
+    bb a2 = ((pawns & 0xfefefefefefefefeL) >> 9) & mask;
     int sq;
     while (a1) {
         POP_LSB(sq, a1);
-        EMIT_MOVE(moves, sq + 9, sq);
+        EMIT_MOVE(moves, sq + 7, sq);
     }
     while (a2) {
         POP_LSB(sq, a2);
-        EMIT_MOVE(moves, sq + 7, sq);
+        EMIT_MOVE(moves, sq + 9, sq);
     }
     return moves - ptr;
 }
@@ -323,4 +323,34 @@ int gen_black_attacks_all(Board *board, Move *moves) {
 
 int gen_black_checks(Board *board, Move *moves) {
     return gen_black_attacks(board, moves, board->white_kings);
+}
+
+// color determined by board
+int gen_moves(Board *board, Move *moves) {
+    if (board->color) {
+        return gen_black_moves(board, moves);
+    }
+    else {
+        return gen_white_moves(board, moves);
+    }
+}
+
+int is_check(Board *board) {
+    Move moves[256];
+    if (board->color) {
+        return gen_white_checks(board, moves);
+    }
+    else {
+        return gen_black_checks(board, moves);
+    }
+}
+
+int is_illegal(Board *board) {
+    Move moves[256];
+    if (board->color) {
+        return gen_black_checks(board, moves);
+    }
+    else {
+        return gen_white_checks(board, moves);
+    }
 }

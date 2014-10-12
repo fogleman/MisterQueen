@@ -18,6 +18,7 @@
 #define COLOR(x) ((x) & 0x10)
 
 typedef struct {
+    int color;
     int squares[64];
     bb all;
     bb white;

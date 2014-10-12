@@ -11,6 +11,8 @@ typedef struct {
 } Move;
 
 void do_move(Board *board, Move *move);
+void undo_move(Board *board, Move *move);
+
 void move_notation(Board *board, Move *move, char *result);
 
 #endif

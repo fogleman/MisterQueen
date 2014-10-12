@@ -5,11 +5,13 @@ void do_move(Board *board, Move *move) {
     move->capture = board->squares[move->dst];
     board_set(board, move->src, EMPTY);
     board_set(board, move->dst, move->piece);
+    board->color ^= BLACK;
 }
 
 void undo_move(Board *board, Move *move) {
     board_set(board, move->src, move->piece);
     board_set(board, move->dst, move->capture);
+    board->color ^= BLACK;
 }
 
 void move_notation(Board *board, Move *move, char *result) {

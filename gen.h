@@ -47,4 +47,8 @@ int gen_black_attacks(Board *board, Move *moves, bb mask);
 int gen_black_attacks_all(Board *board, Move *moves);
 int gen_black_checks(Board *board, Move *moves);
 
+int gen_moves(Board *board, Move *moves);
+int is_check(Board *board);
+int is_illegal(Board *board);
+
 #endif
