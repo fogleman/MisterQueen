@@ -17,9 +17,19 @@
 #define PIECE(x) ((x) & 0x0f)
 #define COLOR(x) ((x) & 0x10)
 
+#define CASTLE_ALL 15
+#define CASTLE_WHITE 3
+#define CASTLE_BLACK 12
+#define CASTLE_WHITE_KING 1
+#define CASTLE_WHITE_QUEEN 2
+#define CASTLE_BLACK_KING 4
+#define CASTLE_BLACK_QUEEN 8
+
 typedef struct {
-    int color;
     int squares[64];
+    int color;
+    int castle;
+    int ep;
     bb all;
     bb white;
     bb black;

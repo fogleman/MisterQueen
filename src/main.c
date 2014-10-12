@@ -24,8 +24,8 @@ void random_game() {
         if (move_count == 0) {
             return;
         }
-        Move move = moves[rand() % move_count];
-        do_move(&board, &move);
+        // Move move = moves[rand() % move_count];
+        // do_move(&board, &move);
         // memcpy(&list[i], &move, sizeof(Move));
     }
     // board_print(&board);

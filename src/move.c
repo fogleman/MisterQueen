@@ -1,16 +1,51 @@
 #include "move.h"
 
-void do_move(Board *board, Move *move) {
-    move->piece = board->squares[move->src];
-    move->capture = board->squares[move->dst];
+void do_move(Board *board, Move *move, Undo *undo) {
+    undo->piece = board->squares[move->src];
+    undo->capture = board->squares[move->dst];
+    undo->castle = board->castle;
+    undo->ep = board->ep;
     board_set(board, move->src, EMPTY);
-    board_set(board, move->dst, move->piece);
+    board_set(board, move->dst, undo->piece);
+    board->ep = 0;
+    if (undo->piece == (WHITE | PAWN)) {
+        bb src = SQ(move->src);
+        bb dst = SQ(move->dst);
+        if ((src & 0x000000000000ff00L) && (dst & 0x00000000ff000000L)) {
+            board->ep = move->src + 8;
+        }
+        if (move->dst == undo->ep) {
+            board_set(board, move->dst - 8, EMPTY);
+        }
+    }
+    else if (undo->piece == (BLACK | PAWN)) {
+        bb src = SQ(move->src);
+        bb dst = SQ(move->dst);
+        if ((src & 0x00ff000000000000L) && (dst & 0x000000ff00000000L)) {
+            board->ep = move->src - 8;
+        }
+        if (move->dst == undo->ep) {
+            board_set(board, move->dst + 8, EMPTY);
+        }
+    }
     board->color ^= BLACK;
 }
 
-void undo_move(Board *board, Move *move) {
-    board_set(board, move->src, move->piece);
-    board_set(board, move->dst, move->capture);
+void undo_move(Board *board, Move *move, Undo *undo) {
+    board_set(board, move->src, undo->piece);
+    board_set(board, move->dst, undo->capture);
+    board->castle = undo->castle;
+    board->ep = undo->ep;
+    if (undo->piece == (WHITE | PAWN)) {
+        if (move->dst == undo->ep) {
+            board_set(board, move->dst - 8, BLACK | PAWN);
+        }
+    }
+    else if (undo->piece == (BLACK | PAWN)) {
+        if (move->dst == undo->ep) {
+            board_set(board, move->dst + 8, WHITE | PAWN);
+        }
+    }
     board->color ^= BLACK;
 }
 

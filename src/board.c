@@ -4,6 +4,7 @@
 
 void board_clear(Board *board) {
     memset(board, 0, sizeof(Board));
+    board->castle = CASTLE_ALL;
 }
 
 void board_reset(Board *board) {
