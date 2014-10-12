@@ -132,7 +132,8 @@ int gen_white_king_castles(Board *board, Move *moves) {
     if (board->castle & CASTLE_WHITE_KING) {
         if (!(board->all & 0x0000000000000060L)) {
             Move dummy[MAX_MOVES];
-            if (!gen_black_attacks_against(board, dummy, 0x0000000000000020L)) {
+            bb mask = 0x0000000000000020L;
+            if (!gen_black_attacks_against(board, dummy, mask)) {
                 EMIT_MOVE(moves, 4, 6);
             }
         }
@@ -140,7 +141,8 @@ int gen_white_king_castles(Board *board, Move *moves) {
     if (board->castle & CASTLE_WHITE_QUEEN) {
         if (!(board->all & 0x000000000000000eL)) {
             Move dummy[MAX_MOVES];
-            if (!gen_black_attacks_against(board, dummy, 0x000000000000000cL)) {
+            bb mask = 0x000000000000000cL;
+            if (!gen_black_attacks_against(board, dummy, mask)) {
                 EMIT_MOVE(moves, 4, 2);
             }
         }
@@ -281,7 +283,8 @@ int gen_black_king_castles(Board *board, Move *moves) {
     if (board->castle & CASTLE_BLACK_KING) {
         if (!(board->all & 0x6000000000000000L)) {
             Move dummy[MAX_MOVES];
-            if (!gen_white_attacks_against(board, dummy, 0x2000000000000000L)) {
+            bb mask = 0x2000000000000000L;
+            if (!gen_white_attacks_against(board, dummy, mask)) {
                 EMIT_MOVE(moves, 60, 62);
             }
         }
@@ -289,7 +292,8 @@ int gen_black_king_castles(Board *board, Move *moves) {
     if (board->castle & CASTLE_BLACK_QUEEN) {
         if (!(board->all & 0x0e00000000000000L)) {
             Move dummy[MAX_MOVES];
-            if (!gen_white_attacks_against(board, dummy, 0x0c00000000000000L)) {
+            bb mask = 0x0c00000000000000L;
+            if (!gen_white_attacks_against(board, dummy, mask)) {
                 EMIT_MOVE(moves, 60, 58);
             }
         }
