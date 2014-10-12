@@ -28,6 +28,40 @@ void do_move(Board *board, Move *move, Undo *undo) {
             board_set(board, move->dst + 8, EMPTY);
         }
     }
+    else if (undo->piece == WHITE_KING) {
+        board->castle &= ~CASTLE_WHITE;
+        if (move->src == 4 && move->dst == 6) {
+            board_set(board, 7, EMPTY);
+            board_set(board, 5, WHITE_ROOK);
+        }
+        else if (move->src == 4 && move->dst == 2) {
+            board_set(board, 0, EMPTY);
+            board_set(board, 3, WHITE_ROOK);
+        }
+    }
+    else if (undo->piece == BLACK_KING) {
+        board->castle &= ~CASTLE_BLACK;
+        if (move->src == 60 && move->dst == 62) {
+            board_set(board, 63, EMPTY);
+            board_set(board, 61, BLACK_ROOK);
+        }
+        else if (move->src == 60 && move->dst == 58) {
+            board_set(board, 56, EMPTY);
+            board_set(board, 59, BLACK_ROOK);
+        }
+    }
+    if (move->src == 0 || move->dst == 0) {
+        board->castle &= ~CASTLE_WHITE_QUEEN;
+    }
+    if (move->src == 7 || move->dst == 7) {
+        board->castle &= ~CASTLE_WHITE_KING;
+    }
+    if (move->src == 56 || move->dst == 56) {
+        board->castle &= ~CASTLE_BLACK_QUEEN;
+    }
+    if (move->src == 63 || move->dst == 63) {
+        board->castle &= ~CASTLE_BLACK_KING;
+    }
     board->color ^= BLACK;
 }
 
@@ -44,6 +78,26 @@ void undo_move(Board *board, Move *move, Undo *undo) {
     else if (undo->piece == BLACK_PAWN) {
         if (move->dst == undo->ep) {
             board_set(board, move->dst + 8, WHITE_PAWN);
+        }
+    }
+    else if (undo->piece == WHITE_KING) {
+        if (move->src == 4 && move->dst == 6) {
+            board_set(board, 7, WHITE_ROOK);
+            board_set(board, 5, EMPTY);
+        }
+        else if (move->src == 4 && move->dst == 2) {
+            board_set(board, 0, WHITE_ROOK);
+            board_set(board, 3, EMPTY);
+        }
+    }
+    else if (undo->piece == BLACK_KING) {
+        if (move->src == 60 && move->dst == 62) {
+            board_set(board, 63, BLACK_ROOK);
+            board_set(board, 61, EMPTY);
+        }
+        else if (move->src == 60 && move->dst == 58) {
+            board_set(board, 56, BLACK_ROOK);
+            board_set(board, 59, EMPTY);
         }
     }
     board->color ^= BLACK;
