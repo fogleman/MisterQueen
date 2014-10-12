@@ -6,7 +6,7 @@ C ?= gcc
 # Extension of source files used in the project
 SRC_EXT = c
 # Path to the source directory, relative to the makefile
-SRC_PATH = .
+SRC_PATH = src
 # General compiler flags
 COMPILE_FLAGS = -std=c99 -Wall -O3
 # Additional release-specific flags
