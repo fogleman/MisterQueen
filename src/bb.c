@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include "bb.h"
 
-bb SQ_KNIGHT[64];
-bb SQ_KING[64];
+bb BB_KNIGHT[64];
+bb BB_KING[64];
 
-bb SQ_BISHOP_6[64];
-bb SQ_ROOK_6[64];
+bb BB_BISHOP_6[64];
+bb BB_ROOK_6[64];
 
 const bb MAGIC_BISHOP[64] = {
     0x010a0a1023020080L, 0x0050100083024000L, 0x8826083200800802L,
@@ -110,7 +110,7 @@ bb bb_slide(int sq, int truncate, bb obstacles, int directions[4][2]) {
                 }
                 break;
             }
-            bb bit = SQ(RF(r, f));
+            bb bit = BIT(RF(r, f));
             value |= bit;
             if (bit & obstacles) {
                 break;
@@ -136,12 +136,12 @@ bb bishop_slide(int sq, int truncate, bb obstacles) {
 }
 
 void bb_init() {
-    // SQ_BISHOP_6, SQ_ROOK_6
+    // BB_BISHOP_6, BB_ROOK_6
     for (int sq = 0; sq < 64; sq++) {
-        SQ_BISHOP_6[sq] = bishop_slide(sq, 1, 0L);
-        SQ_ROOK_6[sq] = rook_slide(sq, 1, 0L);
+        BB_BISHOP_6[sq] = bishop_slide(sq, 1, 0L);
+        BB_ROOK_6[sq] = rook_slide(sq, 1, 0L);
     }
-    // SQ_KNIGHT
+    // BB_KNIGHT
     const int knight_offsets[8][2] = {
         {-2, -1}, {-2,  1}, { 2, -1}, { 2,  1},
         {-1, -2}, {-1,  2}, { 1, -2}, { 1,  2},
@@ -153,13 +153,13 @@ void bb_init() {
                 int r = rank + knight_offsets[i][0];
                 int f = file + knight_offsets[i][1];
                 if (r >= 0 && f >= 0 && r < 8 && f < 8) {
-                    value |= SQ(RF(r, f));
+                    value |= BIT(RF(r, f));
                 }
             }
-            SQ_KNIGHT[RF(rank, file)] = value;
+            BB_KNIGHT[RF(rank, file)] = value;
         }
     }
-    // SQ_KING
+    // BB_KING
     const int king_offsets[8][2] = {
         {-1, -1}, { 0, -1}, { 1, -1},
         {-1,  0}, { 1,  0},
@@ -172,10 +172,10 @@ void bb_init() {
                 int r = rank + king_offsets[i][0];
                 int f = file + king_offsets[i][1];
                 if (r >= 0 && f >= 0 && r < 8 && f < 8) {
-                    value |= SQ(RF(r, f));
+                    value |= BIT(RF(r, f));
                 }
             }
-            SQ_KING[RF(rank, file)] = value;
+            BB_KING[RF(rank, file)] = value;
         }
     }
 
@@ -185,13 +185,13 @@ void bb_init() {
     // ATTACK_BISHOP
     offset = 0;
     for (int sq = 0; sq < 64; sq++) {
-        int count = bb_squares(SQ_BISHOP_6[sq], squares);
+        int count = bb_squares(BB_BISHOP_6[sq], squares);
         int n = 1 << count;
         for (int i = 0; i < n; i++) {
             bb obstacles = 0;
             for (int j = 0; j < count; j++) {
                 if (i & (1 << j)) {
-                    obstacles |= SQ(squares[j]);
+                    obstacles |= BIT(squares[j]);
                 }
             }
             bb value = bishop_slide(sq, 0, obstacles);
@@ -209,13 +209,13 @@ void bb_init() {
     // ATTACK_ROOK
     offset = 0;
     for (int sq = 0; sq < 64; sq++) {
-        int count = bb_squares(SQ_ROOK_6[sq], squares);
+        int count = bb_squares(BB_ROOK_6[sq], squares);
         int n = 1 << count;
         for (int i = 0; i < n; i++) {
             bb obstacles = 0;
             for (int j = 0; j < count; j++) {
                 if (i & (1 << j)) {
-                    obstacles |= SQ(squares[j]);
+                    obstacles |= BIT(squares[j]);
                 }
             }
             bb value = rook_slide(sq, 0, obstacles);
@@ -231,26 +231,26 @@ void bb_init() {
     }
 }
 
-bb sq_bishop(int sq, bb obstacles) {
-    bb value = obstacles & SQ_BISHOP_6[sq];
+bb bb_bishop(int sq, bb obstacles) {
+    bb value = obstacles & BB_BISHOP_6[sq];
     int index = (value * MAGIC_BISHOP[sq]) >> SHIFT_BISHOP[sq];
     return ATTACK_BISHOP[index + OFFSET_BISHOP[sq]];
 }
 
-bb sq_rook(int sq, bb obstacles) {
-    bb value = obstacles & SQ_ROOK_6[sq];
+bb bb_rook(int sq, bb obstacles) {
+    bb value = obstacles & BB_ROOK_6[sq];
     int index = (value * MAGIC_ROOK[sq]) >> SHIFT_ROOK[sq];
     return ATTACK_ROOK[index + OFFSET_ROOK[sq]];
 }
 
-bb sq_queen(int sq, bb obstacles) {
-    return sq_bishop(sq, obstacles) | sq_rook(sq, obstacles);
+bb bb_queen(int sq, bb obstacles) {
+    return bb_bishop(sq, obstacles) | bb_rook(sq, obstacles);
 }
 
 void bb_print(bb value) {
     for (int rank = 7; rank >= 0; rank--) {
         for (int file = 0; file < 8; file++) {
-            if (value & SQ(RF(rank, file))) {
+            if (value & BIT(RF(rank, file))) {
                 putchar('X');
             }
             else {

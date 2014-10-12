@@ -8,7 +8,7 @@ int gen_knight_moves(Move *moves, bb srcs, bb mask) {
     int src, dst;
     while (srcs) {
         POP_LSB(src, srcs);
-        bb dsts = SQ_KNIGHT[src] & mask;
+        bb dsts = BB_KNIGHT[src] & mask;
         while (dsts) {
             POP_LSB(dst, dsts);
             EMIT_MOVE(moves, src, dst);
@@ -22,7 +22,7 @@ int gen_bishop_moves(Move *moves, bb srcs, bb mask, bb all) {
     int src, dst;
     while (srcs) {
         POP_LSB(src, srcs);
-        bb dsts = sq_bishop(src, all) & mask;
+        bb dsts = bb_bishop(src, all) & mask;
         while (dsts) {
             POP_LSB(dst, dsts);
             EMIT_MOVE(moves, src, dst);
@@ -36,7 +36,7 @@ int gen_rook_moves(Move *moves, bb srcs, bb mask, bb all) {
     int src, dst;
     while (srcs) {
         POP_LSB(src, srcs);
-        bb dsts = sq_rook(src, all) & mask;
+        bb dsts = bb_rook(src, all) & mask;
         while (dsts) {
             POP_LSB(dst, dsts);
             EMIT_MOVE(moves, src, dst);
@@ -50,7 +50,7 @@ int gen_queen_moves(Move *moves, bb srcs, bb mask, bb all) {
     int src, dst;
     while (srcs) {
         POP_LSB(src, srcs);
-        bb dsts = sq_queen(src, all) & mask;
+        bb dsts = bb_queen(src, all) & mask;
         while (dsts) {
             POP_LSB(dst, dsts);
             EMIT_MOVE(moves, src, dst);
@@ -64,7 +64,7 @@ int gen_king_moves(Move *moves, bb srcs, bb mask) {
     int src, dst;
     while (srcs) {
         POP_LSB(src, srcs);
-        bb dsts = SQ_KING[src] & mask;
+        bb dsts = BB_KING[src] & mask;
         while (dsts) {
             POP_LSB(dst, dsts);
             EMIT_MOVE(moves, src, dst);
@@ -77,7 +77,7 @@ int gen_king_moves(Move *moves, bb srcs, bb mask) {
 int gen_white_pawn_moves(Board *board, Move *moves) {
     Move *ptr = moves;
     bb pawns = board->white_pawns;
-    bb mask = board->black | SQ(board->ep);
+    bb mask = board->black | BIT(board->ep);
     bb p1 = (pawns << 8) & ~board->all;
     bb p2 = ((p1 & 0x0000000000ff0000L) << 8) & ~board->all;
     bb a1 = ((pawns & 0xfefefefefefefefeL) << 7) & mask;
@@ -204,7 +204,7 @@ int gen_white_checks(Board *board, Move *moves) {
 int gen_black_pawn_moves(Board *board, Move *moves) {
     Move *ptr = moves;
     bb pawns = board->black_pawns;
-    bb mask = board->white | SQ(board->ep);
+    bb mask = board->white | BIT(board->ep);
     bb p1 = (pawns >> 8) & ~board->all;
     bb p2 = ((p1 & 0x0000ff0000000000L) >> 8) & ~board->all;
     bb a1 = ((pawns & 0x7f7f7f7f7f7f7f7fL) >> 7) & mask;
