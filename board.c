@@ -2,8 +2,12 @@
 #include <string.h>
 #include "board.h"
 
-void board_reset(Board *board) {
+void board_clear(Board *board) {
     memset(board, 0, sizeof(Board));
+}
+
+void board_reset(Board *board) {
+    board_clear(board);
     for (int file = 0; file < 8; file++) {
         board_set(board, RF(1, file), WHITE | PAWN);
         board_set(board, RF(6, file), BLACK | PAWN);
@@ -105,4 +109,53 @@ void board_print(Board *board) {
         putchar('\n');
     }
     putchar('\n');
+}
+
+void board_load_fen(Board *board, char *fen) {
+    board_clear(board);
+    int i = 0;
+    int n = strlen(fen);
+    int rank = 7;
+    int file = 0;
+    for (; i < n; i++) {
+        int done = 0;
+        switch (fen[i]) {
+            case 'P': board_set(board, RF(rank, file++), WHITE | PAWN); break;
+            case 'N': board_set(board, RF(rank, file++), WHITE | KNIGHT); break;
+            case 'B': board_set(board, RF(rank, file++), WHITE | BISHOP); break;
+            case 'R': board_set(board, RF(rank, file++), WHITE | ROOK); break;
+            case 'Q': board_set(board, RF(rank, file++), WHITE | QUEEN); break;
+            case 'K': board_set(board, RF(rank, file++), WHITE | KING); break;
+            case 'p': board_set(board, RF(rank, file++), BLACK | PAWN); break;
+            case 'n': board_set(board, RF(rank, file++), BLACK | KNIGHT); break;
+            case 'b': board_set(board, RF(rank, file++), BLACK | BISHOP); break;
+            case 'r': board_set(board, RF(rank, file++), BLACK | ROOK); break;
+            case 'q': board_set(board, RF(rank, file++), BLACK | QUEEN); break;
+            case 'k': board_set(board, RF(rank, file++), BLACK | KING); break;
+            case '/': file = 0; rank--; break;
+            case '1': file += 1; break;
+            case '2': file += 2; break;
+            case '3': file += 3; break;
+            case '4': file += 4; break;
+            case '5': file += 5; break;
+            case '6': file += 6; break;
+            case '7': file += 7; break;
+            case '8': file += 8; break;
+            case ' ': done = 1; break;
+            default: return;
+        }
+        if (done) {
+            if (rank != 0 || file != 8) {
+                return;
+            }
+            break;
+        }
+    }
+    i++;
+    switch (fen[i++]) {
+        case 'w': board->color = WHITE; break;
+        case 'b': board->color = BLACK; break;
+        default: return;
+    }
+    i++;
 }
