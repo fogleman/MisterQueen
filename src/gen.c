@@ -130,17 +130,17 @@ int gen_white_king_moves(Board *board, Move *moves) {
 int gen_white_king_castles(Board *board, Move *moves) {
     Move *ptr = moves;
     if (board->castle & CASTLE_WHITE_KING) {
-        if (!(board->all & 0x60L)) {
-            Move dummy[256];
-            if (!gen_black_attacks_against(board, dummy, 0x20L)) {
+        if (!(board->all & 0x0000000000000060L)) {
+            Move dummy[MAX_MOVES];
+            if (!gen_black_attacks_against(board, dummy, 0x0000000000000020L)) {
                 EMIT_MOVE(moves, 4, 6);
             }
         }
     }
     if (board->castle & CASTLE_WHITE_QUEEN) {
-        if (!(board->all & 0x0eL)) {
-            Move dummy[256];
-            if (!gen_black_attacks_against(board, dummy, 0x0cL)) {
+        if (!(board->all & 0x000000000000000eL)) {
+            Move dummy[MAX_MOVES];
+            if (!gen_black_attacks_against(board, dummy, 0x000000000000000cL)) {
                 EMIT_MOVE(moves, 4, 2);
             }
         }
@@ -280,7 +280,7 @@ int gen_black_king_castles(Board *board, Move *moves) {
     Move *ptr = moves;
     if (board->castle & CASTLE_BLACK_KING) {
         if (!(board->all & 0x6000000000000000L)) {
-            Move dummy[256];
+            Move dummy[MAX_MOVES];
             if (!gen_white_attacks_against(board, dummy, 0x2000000000000000L)) {
                 EMIT_MOVE(moves, 60, 62);
             }
@@ -288,7 +288,7 @@ int gen_black_king_castles(Board *board, Move *moves) {
     }
     if (board->castle & CASTLE_BLACK_QUEEN) {
         if (!(board->all & 0x0e00000000000000L)) {
-            Move dummy[256];
+            Move dummy[MAX_MOVES];
             if (!gen_white_attacks_against(board, dummy, 0x0c00000000000000L)) {
                 EMIT_MOVE(moves, 60, 58);
             }
@@ -382,7 +382,7 @@ int gen_moves(Board *board, Move *moves) {
 }
 
 int is_check(Board *board) {
-    Move moves[256];
+    Move moves[MAX_MOVES];
     if (board->color) {
         return gen_white_checks(board, moves);
     }
@@ -392,7 +392,7 @@ int is_check(Board *board) {
 }
 
 int is_illegal(Board *board) {
-    Move moves[256];
+    Move moves[MAX_MOVES];
     if (board->color) {
         return gen_black_checks(board, moves);
     }

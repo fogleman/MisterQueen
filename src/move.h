@@ -4,6 +4,8 @@
 #include "bb.h"
 #include "board.h"
 
+#define MAX_MOVES 256
+
 typedef struct {
     int src;
     int dst;

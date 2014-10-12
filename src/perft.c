@@ -12,7 +12,7 @@ unsigned long long perft(Board *board, int depth) {
     }
     unsigned long long result = 0;
     Undo undo;
-    Move moves[256];
+    Move moves[MAX_MOVES];
     int count = gen_moves(board, moves);
     for (int i = 0; i < count; i++) {
         do_move(board, &moves[i], &undo);

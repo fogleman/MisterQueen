@@ -11,9 +11,9 @@
 void random_game() {
     Board board;
     board_reset(&board);
-    Move moves[256];
+    Move moves[MAX_MOVES];
     int move_count;
-    // Move list[256];
+    // Move list[MAX_MOVES];
     for (int i = 0; i < 50; i++) {
         if (i % 2 == 0) {
             move_count = gen_white_moves(&board, moves);
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
     // Board board;
     // board_reset(&board);
     // board_print(&board);
-    // Move moves[256];
+    // Move moves[MAX_MOVES];
     // char notation[16];
     // int move_count, attack_count, check_count;
     // for (int i = 0; i < 100; i++) {
