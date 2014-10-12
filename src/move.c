@@ -8,7 +8,7 @@ void do_move(Board *board, Move *move, Undo *undo) {
     board_set(board, move->src, EMPTY);
     board_set(board, move->dst, undo->piece);
     board->ep = 0;
-    if (undo->piece == (WHITE | PAWN)) {
+    if (undo->piece == WHITE_PAWN) {
         bb src = BIT(move->src);
         bb dst = BIT(move->dst);
         if ((src & 0x000000000000ff00L) && (dst & 0x00000000ff000000L)) {
@@ -18,7 +18,7 @@ void do_move(Board *board, Move *move, Undo *undo) {
             board_set(board, move->dst - 8, EMPTY);
         }
     }
-    else if (undo->piece == (BLACK | PAWN)) {
+    else if (undo->piece == BLACK_PAWN) {
         bb src = BIT(move->src);
         bb dst = BIT(move->dst);
         if ((src & 0x00ff000000000000L) && (dst & 0x000000ff00000000L)) {
@@ -36,14 +36,14 @@ void undo_move(Board *board, Move *move, Undo *undo) {
     board_set(board, move->dst, undo->capture);
     board->castle = undo->castle;
     board->ep = undo->ep;
-    if (undo->piece == (WHITE | PAWN)) {
+    if (undo->piece == WHITE_PAWN) {
         if (move->dst == undo->ep) {
-            board_set(board, move->dst - 8, BLACK | PAWN);
+            board_set(board, move->dst - 8, BLACK_PAWN);
         }
     }
-    else if (undo->piece == (BLACK | PAWN)) {
+    else if (undo->piece == BLACK_PAWN) {
         if (move->dst == undo->ep) {
-            board_set(board, move->dst + 8, WHITE | PAWN);
+            board_set(board, move->dst + 8, WHITE_PAWN);
         }
     }
     board->color ^= BLACK;

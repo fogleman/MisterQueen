@@ -10,25 +10,25 @@ void board_clear(Board *board) {
 void board_reset(Board *board) {
     board_clear(board);
     for (int file = 0; file < 8; file++) {
-        board_set(board, RF(1, file), WHITE | PAWN);
-        board_set(board, RF(6, file), BLACK | PAWN);
+        board_set(board, RF(1, file), WHITE_PAWN);
+        board_set(board, RF(6, file), BLACK_PAWN);
     }
-    board_set(board, RF(0, 0), WHITE | ROOK);
-    board_set(board, RF(0, 1), WHITE | KNIGHT);
-    board_set(board, RF(0, 2), WHITE | BISHOP);
-    board_set(board, RF(0, 3), WHITE | QUEEN);
-    board_set(board, RF(0, 4), WHITE | KING);
-    board_set(board, RF(0, 5), WHITE | BISHOP);
-    board_set(board, RF(0, 6), WHITE | KNIGHT);
-    board_set(board, RF(0, 7), WHITE | ROOK);
-    board_set(board, RF(7, 0), BLACK | ROOK);
-    board_set(board, RF(7, 1), BLACK | KNIGHT);
-    board_set(board, RF(7, 2), BLACK | BISHOP);
-    board_set(board, RF(7, 3), BLACK | QUEEN);
-    board_set(board, RF(7, 4), BLACK | KING);
-    board_set(board, RF(7, 5), BLACK | BISHOP);
-    board_set(board, RF(7, 6), BLACK | KNIGHT);
-    board_set(board, RF(7, 7), BLACK | ROOK);
+    board_set(board, RF(0, 0), WHITE_ROOK);
+    board_set(board, RF(0, 1), WHITE_KNIGHT);
+    board_set(board, RF(0, 2), WHITE_BISHOP);
+    board_set(board, RF(0, 3), WHITE_QUEEN);
+    board_set(board, RF(0, 4), WHITE_KING);
+    board_set(board, RF(0, 5), WHITE_BISHOP);
+    board_set(board, RF(0, 6), WHITE_KNIGHT);
+    board_set(board, RF(0, 7), WHITE_ROOK);
+    board_set(board, RF(7, 0), BLACK_ROOK);
+    board_set(board, RF(7, 1), BLACK_KNIGHT);
+    board_set(board, RF(7, 2), BLACK_BISHOP);
+    board_set(board, RF(7, 3), BLACK_QUEEN);
+    board_set(board, RF(7, 4), BLACK_KING);
+    board_set(board, RF(7, 5), BLACK_BISHOP);
+    board_set(board, RF(7, 6), BLACK_KNIGHT);
+    board_set(board, RF(7, 7), BLACK_ROOK);
 }
 
 void board_set(Board *board, int sq, int piece) {
@@ -121,18 +121,18 @@ void board_load_fen(Board *board, char *fen) {
     for (; i < n; i++) {
         int done = 0;
         switch (fen[i]) {
-            case 'P': board_set(board, RF(rank, file++), WHITE | PAWN); break;
-            case 'N': board_set(board, RF(rank, file++), WHITE | KNIGHT); break;
-            case 'B': board_set(board, RF(rank, file++), WHITE | BISHOP); break;
-            case 'R': board_set(board, RF(rank, file++), WHITE | ROOK); break;
-            case 'Q': board_set(board, RF(rank, file++), WHITE | QUEEN); break;
-            case 'K': board_set(board, RF(rank, file++), WHITE | KING); break;
-            case 'p': board_set(board, RF(rank, file++), BLACK | PAWN); break;
-            case 'n': board_set(board, RF(rank, file++), BLACK | KNIGHT); break;
-            case 'b': board_set(board, RF(rank, file++), BLACK | BISHOP); break;
-            case 'r': board_set(board, RF(rank, file++), BLACK | ROOK); break;
-            case 'q': board_set(board, RF(rank, file++), BLACK | QUEEN); break;
-            case 'k': board_set(board, RF(rank, file++), BLACK | KING); break;
+            case 'P': board_set(board, RF(rank, file++), WHITE_PAWN); break;
+            case 'N': board_set(board, RF(rank, file++), WHITE_KNIGHT); break;
+            case 'B': board_set(board, RF(rank, file++), WHITE_BISHOP); break;
+            case 'R': board_set(board, RF(rank, file++), WHITE_ROOK); break;
+            case 'Q': board_set(board, RF(rank, file++), WHITE_QUEEN); break;
+            case 'K': board_set(board, RF(rank, file++), WHITE_KING); break;
+            case 'p': board_set(board, RF(rank, file++), BLACK_PAWN); break;
+            case 'n': board_set(board, RF(rank, file++), BLACK_KNIGHT); break;
+            case 'b': board_set(board, RF(rank, file++), BLACK_BISHOP); break;
+            case 'r': board_set(board, RF(rank, file++), BLACK_ROOK); break;
+            case 'q': board_set(board, RF(rank, file++), BLACK_QUEEN); break;
+            case 'k': board_set(board, RF(rank, file++), BLACK_KING); break;
             case '/': file = 0; rank--; break;
             case '1': file += 1; break;
             case '2': file += 2; break;
