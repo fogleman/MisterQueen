@@ -43,7 +43,7 @@ typedef struct {
     int squares[64];
     int color;
     int castle;
-    int ep;
+    bb ep;
     bb all;
     bb white;
     bb black;

@@ -93,7 +93,7 @@ int gen_king_moves(Move *moves, bb srcs, bb mask) {
 int gen_white_pawn_moves(Board *board, Move *moves) {
     Move *ptr = moves;
     bb pawns = board->white_pawns;
-    bb mask = board->black | BIT(board->ep);
+    bb mask = board->black | board->ep;
     bb promo = 0xff00000000000000L;
     bb p1 = (pawns << 8) & ~board->all;
     bb p2 = ((p1 & 0x0000000000ff0000L) << 8) & ~board->all;
@@ -260,7 +260,7 @@ int gen_white_checks(Board *board, Move *moves) {
 int gen_black_pawn_moves(Board *board, Move *moves) {
     Move *ptr = moves;
     bb pawns = board->black_pawns;
-    bb mask = board->white | BIT(board->ep);
+    bb mask = board->white | board->ep;
     bb promo = 0x00000000000000ffL;
     bb p1 = (pawns >> 8) & ~board->all;
     bb p2 = ((p1 & 0x0000ff0000000000L) >> 8) & ~board->all;

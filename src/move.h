@@ -16,7 +16,7 @@ typedef struct {
     int piece;
     int capture;
     int castle;
-    int ep;
+    bb ep;
 } Undo;
 
 void do_move(Board *board, Move *move, Undo *undo);

@@ -12,14 +12,14 @@ void do_move(Board *board, Move *move, Undo *undo) {
     else {
         board_set(board, move->dst, undo->piece);
     }
-    board->ep = -1;
+    board->ep = 0L;
     if (undo->piece == WHITE_PAWN) {
         bb src = BIT(move->src);
         bb dst = BIT(move->dst);
         if ((src & 0x000000000000ff00L) && (dst & 0x00000000ff000000L)) {
-            board->ep = move->src + 8;
+            board->ep = BIT(move->src + 8);
         }
-        if (move->dst == undo->ep) {
+        if (dst == undo->ep) {
             board_set(board, move->dst - 8, EMPTY);
         }
     }
@@ -27,9 +27,9 @@ void do_move(Board *board, Move *move, Undo *undo) {
         bb src = BIT(move->src);
         bb dst = BIT(move->dst);
         if ((src & 0x00ff000000000000L) && (dst & 0x000000ff00000000L)) {
-            board->ep = move->src - 8;
+            board->ep = BIT(move->src - 8);
         }
-        if (move->dst == undo->ep) {
+        if (dst == undo->ep) {
             board_set(board, move->dst + 8, EMPTY);
         }
     }
@@ -76,12 +76,12 @@ void undo_move(Board *board, Move *move, Undo *undo) {
     board->castle = undo->castle;
     board->ep = undo->ep;
     if (undo->piece == WHITE_PAWN) {
-        if (move->dst == undo->ep) {
+        if (BIT(move->dst) == undo->ep) {
             board_set(board, move->dst - 8, BLACK_PAWN);
         }
     }
     else if (undo->piece == BLACK_PAWN) {
-        if (move->dst == undo->ep) {
+        if (BIT(move->dst) == undo->ep) {
             board_set(board, move->dst + 8, WHITE_PAWN);
         }
     }
