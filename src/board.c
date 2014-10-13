@@ -159,4 +159,21 @@ void board_load_fen(Board *board, char *fen) {
         default: return;
     }
     i++;
+    board->castle = 0;
+    for (; i < n; i++) {
+        int done = 0;
+        switch (fen[i]) {
+            case 'K': board->castle |= CASTLE_WHITE_KING; break;
+            case 'Q': board->castle |= CASTLE_WHITE_QUEEN; break;
+            case 'k': board->castle |= CASTLE_BLACK_KING; break;
+            case 'q': board->castle |= CASTLE_BLACK_QUEEN; break;
+            case '-': done = 1; break;
+            case ' ': done = 1; break;
+            default: return;
+        }
+        if (done) {
+            break;
+        }
+    }
+    i++;
 }

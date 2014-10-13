@@ -9,6 +9,7 @@
 typedef struct {
     int src;
     int dst;
+    int promotion;
 } Move;
 
 typedef struct {

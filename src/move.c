@@ -6,7 +6,12 @@ void do_move(Board *board, Move *move, Undo *undo) {
     undo->castle = board->castle;
     undo->ep = board->ep;
     board_set(board, move->src, EMPTY);
-    board_set(board, move->dst, undo->piece);
+    if (move->promotion) {
+        board_set(board, move->dst, move->promotion);
+    }
+    else {
+        board_set(board, move->dst, undo->piece);
+    }
     board->ep = 0;
     if (undo->piece == WHITE_PAWN) {
         bb src = BIT(move->src);

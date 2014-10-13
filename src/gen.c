@@ -1,6 +1,22 @@
 #include "gen.h"
 
-#define EMIT_MOVE(m, a, b) (m)->src = (a); (m)->dst = (b); (m)++;
+#define EMIT_MOVE(m, a, b) \
+    (m)->src = (a); \
+    (m)->dst = (b); \
+    (m)->promotion = EMPTY; \
+    (m)++;
+
+#define EMIT_PROMOTION(m, a, b, p) \
+    (m)->src = (a); \
+    (m)->dst = (b); \
+    (m)->promotion = (p); \
+    (m)++;
+
+#define EMIT_PROMOTIONS(m, a, b, c) \
+    EMIT_PROMOTION(m, a, b, c | QUEEN) \
+    EMIT_PROMOTION(m, a, b, c | ROOK) \
+    EMIT_PROMOTION(m, a, b, c | BISHOP) \
+    EMIT_PROMOTION(m, a, b, c | KNIGHT)
 
 // generic move generators
 int gen_knight_moves(Move *moves, bb srcs, bb mask) {
@@ -78,6 +94,7 @@ int gen_white_pawn_moves(Board *board, Move *moves) {
     Move *ptr = moves;
     bb pawns = board->white_pawns;
     bb mask = board->black | BIT(board->ep);
+    bb promo = 0xff00000000000000L;
     bb p1 = (pawns << 8) & ~board->all;
     bb p2 = ((p1 & 0x0000000000ff0000L) << 8) & ~board->all;
     bb a1 = ((pawns & 0xfefefefefefefefeL) << 7) & mask;
@@ -85,7 +102,12 @@ int gen_white_pawn_moves(Board *board, Move *moves) {
     int sq;
     while (p1) {
         POP_LSB(sq, p1);
-        EMIT_MOVE(moves, sq - 8, sq);
+        if (BIT(sq) & promo) {
+            EMIT_PROMOTIONS(moves, sq - 8, sq, WHITE);
+        }
+        else {
+            EMIT_MOVE(moves, sq - 8, sq);
+        }
     }
     while (p2) {
         POP_LSB(sq, p2);
@@ -93,11 +115,21 @@ int gen_white_pawn_moves(Board *board, Move *moves) {
     }
     while (a1) {
         POP_LSB(sq, a1);
-        EMIT_MOVE(moves, sq - 7, sq);
+        if (BIT(sq) & promo) {
+            EMIT_PROMOTIONS(moves, sq - 7, sq, WHITE);
+        }
+        else {
+            EMIT_MOVE(moves, sq - 7, sq);
+        }
     }
     while (a2) {
         POP_LSB(sq, a2);
-        EMIT_MOVE(moves, sq - 9, sq);
+        if (BIT(sq) & promo) {
+            EMIT_PROMOTIONS(moves, sq - 9, sq, WHITE);
+        }
+        else {
+            EMIT_MOVE(moves, sq - 9, sq);
+        }
     }
     return moves - ptr;
 }
@@ -132,7 +164,7 @@ int gen_white_king_castles(Board *board, Move *moves) {
     if (board->castle & CASTLE_WHITE_KING) {
         if (!(board->all & 0x0000000000000060L)) {
             Move dummy[MAX_MOVES];
-            bb mask = 0x0000000000000020L;
+            bb mask = 0x0000000000000030L;
             if (!gen_black_attacks_against(board, dummy, mask)) {
                 EMIT_MOVE(moves, 4, 6);
             }
@@ -141,7 +173,7 @@ int gen_white_king_castles(Board *board, Move *moves) {
     if (board->castle & CASTLE_WHITE_QUEEN) {
         if (!(board->all & 0x000000000000000eL)) {
             Move dummy[MAX_MOVES];
-            bb mask = 0x000000000000000cL;
+            bb mask = 0x0000000000000018L;
             if (!gen_black_attacks_against(board, dummy, mask)) {
                 EMIT_MOVE(moves, 4, 2);
             }
@@ -229,6 +261,7 @@ int gen_black_pawn_moves(Board *board, Move *moves) {
     Move *ptr = moves;
     bb pawns = board->black_pawns;
     bb mask = board->white | BIT(board->ep);
+    bb promo = 0x00000000000000ffL;
     bb p1 = (pawns >> 8) & ~board->all;
     bb p2 = ((p1 & 0x0000ff0000000000L) >> 8) & ~board->all;
     bb a1 = ((pawns & 0x7f7f7f7f7f7f7f7fL) >> 7) & mask;
@@ -236,7 +269,12 @@ int gen_black_pawn_moves(Board *board, Move *moves) {
     int sq;
     while (p1) {
         POP_LSB(sq, p1);
-        EMIT_MOVE(moves, sq + 8, sq);
+        if (BIT(sq) & promo) {
+            EMIT_PROMOTIONS(moves, sq + 8, sq, BLACK);
+        }
+        else {
+            EMIT_MOVE(moves, sq + 8, sq);
+        }
     }
     while (p2) {
         POP_LSB(sq, p2);
@@ -244,11 +282,21 @@ int gen_black_pawn_moves(Board *board, Move *moves) {
     }
     while (a1) {
         POP_LSB(sq, a1);
-        EMIT_MOVE(moves, sq + 7, sq);
+        if (BIT(sq) & promo) {
+            EMIT_PROMOTIONS(moves, sq + 7, sq, BLACK);
+        }
+        else {
+            EMIT_MOVE(moves, sq + 7, sq);
+        }
     }
     while (a2) {
         POP_LSB(sq, a2);
-        EMIT_MOVE(moves, sq + 9, sq);
+        if (BIT(sq) & promo) {
+            EMIT_PROMOTIONS(moves, sq + 9, sq, BLACK);
+        }
+        else {
+            EMIT_MOVE(moves, sq + 9, sq);
+        }
     }
     return moves - ptr;
 }
@@ -283,7 +331,7 @@ int gen_black_king_castles(Board *board, Move *moves) {
     if (board->castle & CASTLE_BLACK_KING) {
         if (!(board->all & 0x6000000000000000L)) {
             Move dummy[MAX_MOVES];
-            bb mask = 0x2000000000000000L;
+            bb mask = 0x3000000000000000L;
             if (!gen_white_attacks_against(board, dummy, mask)) {
                 EMIT_MOVE(moves, 60, 62);
             }
@@ -292,7 +340,7 @@ int gen_black_king_castles(Board *board, Move *moves) {
     if (board->castle & CASTLE_BLACK_QUEEN) {
         if (!(board->all & 0x0e00000000000000L)) {
             Move dummy[MAX_MOVES];
-            bb mask = 0x0c00000000000000L;
+            bb mask = 0x1800000000000000L;
             if (!gen_white_attacks_against(board, dummy, mask)) {
                 EMIT_MOVE(moves, 60, 58);
             }
