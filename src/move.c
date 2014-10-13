@@ -12,7 +12,7 @@ void do_move(Board *board, Move *move, Undo *undo) {
     else {
         board_set(board, move->dst, undo->piece);
     }
-    board->ep = 0;
+    board->ep = -1;
     if (undo->piece == WHITE_PAWN) {
         bb src = BIT(move->src);
         bb dst = BIT(move->dst);
@@ -132,5 +132,14 @@ void move_notation(Board *board, Move *move, char *result) {
     }
     *result++ = file2;
     *result++ = rank2;
+    if (move->promotion) {
+        *result++ = '=';
+        switch (PIECE(move->promotion)) {
+            case KNIGHT: *result++ = 'N'; break;
+            case BISHOP: *result++ = 'B'; break;
+            case ROOK:   *result++ = 'R'; break;
+            case QUEEN:  *result++ = 'Q'; break;
+        }
+    }
     *result++ = 0;
 }

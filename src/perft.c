@@ -32,6 +32,7 @@ void perft_test(char *fen, unsigned long long *expected, int count) {
         printf("%s: depth = %2d, expected = %12llu, actual = %12llu\n",
             result, depth, expected[depth], actual);
     }
+    printf("\n");
 }
 
 void perft_tests() {
