@@ -1,6 +1,14 @@
 #include "move.h"
 
+void toggle_hash(Board *board) {
+    board->hash ^= HASH_CASTLE[board->castle];
+    if (board->ep) {
+        board->hash ^= HASH_EP[LSB(board->ep) % 8];
+    }
+}
+
 void do_move(Board *board, Move *move, Undo *undo) {
+    toggle_hash(board);
     undo->piece = board->squares[move->src];
     undo->capture = board->squares[move->dst];
     undo->castle = board->castle;
@@ -68,9 +76,12 @@ void do_move(Board *board, Move *move, Undo *undo) {
         board->castle &= ~CASTLE_BLACK_KING;
     }
     board->color ^= BLACK;
+    board->hash ^= HASH_COLOR;
+    toggle_hash(board);
 }
 
 void undo_move(Board *board, Move *move, Undo *undo) {
+    toggle_hash(board);
     board_set(board, move->src, undo->piece);
     board_set(board, move->dst, undo->capture);
     board->castle = undo->castle;
@@ -106,6 +117,8 @@ void undo_move(Board *board, Move *move, Undo *undo) {
         }
     }
     board->color ^= BLACK;
+    board->hash ^= HASH_COLOR;
+    toggle_hash(board);
 }
 
 void move_notation(Board *board, Move *move, char *result) {

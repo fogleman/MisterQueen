@@ -3,12 +3,28 @@
 #include "move.h"
 #include "perft.h"
 
+#define SIZE (1 << 25)
+#define MASK ((SIZE) - 1)
+
+typedef struct {
+    bb key;
+    bb value;
+    int depth;
+} Entry;
+
+Entry TABLE[SIZE];
+
 unsigned long long perft(Board *board, int depth) {
     if (is_illegal(board)) {
         return 0L;
     }
     if (depth == 0) {
         return 1L;
+    }
+    int index = board->hash & MASK;
+    Entry *entry = &TABLE[index];
+    if (entry->key == board->hash && entry->depth == depth) {
+        return entry->value;
     }
     unsigned long long result = 0;
     Undo undo;
@@ -19,6 +35,9 @@ unsigned long long perft(Board *board, int depth) {
         result += perft(board, depth - 1);
         undo_move(board, &moves[i], &undo);
     }
+    entry->key = board->hash;
+    entry->value = result;
+    entry->depth = depth;
     return result;
 }
 

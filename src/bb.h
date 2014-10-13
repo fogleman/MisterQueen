@@ -31,8 +31,25 @@ extern int OFFSET_ROOK[64];
 extern bb ATTACK_BISHOP[5248];
 extern bb ATTACK_ROOK[102400];
 
+extern bb HASH_WHITE_PAWN[64];
+extern bb HASH_BLACK_PAWN[64];
+extern bb HASH_WHITE_KNIGHT[64];
+extern bb HASH_BLACK_KNIGHT[64];
+extern bb HASH_WHITE_BISHOP[64];
+extern bb HASH_BLACK_BISHOP[64];
+extern bb HASH_WHITE_ROOK[64];
+extern bb HASH_BLACK_ROOK[64];
+extern bb HASH_WHITE_QUEEN[64];
+extern bb HASH_BLACK_QUEEN[64];
+extern bb HASH_WHITE_KING[64];
+extern bb HASH_BLACK_KING[64];
+extern bb HASH_CASTLE[16];
+extern bb HASH_EP[8];
+extern bb HASH_COLOR;
+
 void bb_init();
 void bb_print(bb value);
+bb bb_random();
 
 bb bb_bishop(int sq, bb obstacles);
 bb bb_rook(int sq, bb obstacles);
