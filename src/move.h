@@ -23,5 +23,6 @@ void do_move(Board *board, Move *move, Undo *undo);
 void undo_move(Board *board, Move *move, Undo *undo);
 
 void move_notation(Board *board, Move *move, char *result);
+void move_print(Board *board, Move *move);
 
 #endif

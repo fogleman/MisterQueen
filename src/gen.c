@@ -433,6 +433,15 @@ int gen_moves(Board *board, Move *moves) {
     }
 }
 
+int gen_attacks(Board *board, Move *moves) {
+    if (board->color) {
+        return gen_black_attacks(board, moves);
+    }
+    else {
+        return gen_white_attacks(board, moves);
+    }
+}
+
 int is_check(Board *board) {
     Move moves[MAX_MOVES];
     if (board->color) {

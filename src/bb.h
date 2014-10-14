@@ -6,7 +6,7 @@
 
 #define LSB(x) (__builtin_ctzll(x))
 #define MSB(x) (__builtin_clzll(x))
-// #define BITS(x) (__builtin_popcountll(x))
+#define BITS(x) (__builtin_popcountll(x))
 
 #define POP_LSB(b, x) b = LSB(x); x &= ~BIT(b);
 #define POP_MSB(b, x) b = MSB(x); x &= ~BIT(b);

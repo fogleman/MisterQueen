@@ -1,14 +1,14 @@
+#include <stdio.h>
 #include "move.h"
 
-void toggle_hash(Board *board) {
-    board->hash ^= HASH_CASTLE[board->castle];
-    if (board->ep) {
-        board->hash ^= HASH_EP[LSB(board->ep) % 8];
+#define TOGGLE_HASH(board) \
+    board->hash ^= HASH_CASTLE[board->castle]; \
+    if (board->ep) { \
+        board->hash ^= HASH_EP[LSB(board->ep) % 8]; \
     }
-}
 
 void do_move(Board *board, Move *move, Undo *undo) {
-    toggle_hash(board);
+    TOGGLE_HASH(board);
     undo->piece = board->squares[move->src];
     undo->capture = board->squares[move->dst];
     undo->castle = board->castle;
@@ -77,11 +77,11 @@ void do_move(Board *board, Move *move, Undo *undo) {
     }
     board->color ^= BLACK;
     board->hash ^= HASH_COLOR;
-    toggle_hash(board);
+    TOGGLE_HASH(board);
 }
 
 void undo_move(Board *board, Move *move, Undo *undo) {
-    toggle_hash(board);
+    TOGGLE_HASH(board);
     board_set(board, move->src, undo->piece);
     board_set(board, move->dst, undo->capture);
     board->castle = undo->castle;
@@ -118,7 +118,7 @@ void undo_move(Board *board, Move *move, Undo *undo) {
     }
     board->color ^= BLACK;
     board->hash ^= HASH_COLOR;
-    toggle_hash(board);
+    TOGGLE_HASH(board);
 }
 
 void move_notation(Board *board, Move *move, char *result) {
@@ -155,4 +155,10 @@ void move_notation(Board *board, Move *move, char *result) {
         }
     }
     *result++ = 0;
+}
+
+void move_print(Board *board, Move *move) {
+    char notation[16];
+    move_notation(board, move, notation);
+    printf("%s\n", notation);
 }
