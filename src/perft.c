@@ -3,7 +3,7 @@
 #include "move.h"
 #include "perft.h"
 
-#define SIZE (1 << 25)
+#define SIZE (1 << 20)
 #define MASK ((SIZE) - 1)
 
 typedef struct {
@@ -13,6 +13,8 @@ typedef struct {
 } Entry;
 
 Entry TABLE[SIZE];
+
+static int hits;
 
 unsigned long long perft(Board *board, int depth) {
     if (is_illegal(board)) {
@@ -24,6 +26,7 @@ unsigned long long perft(Board *board, int depth) {
     int index = board->hash & MASK;
     Entry *entry = &TABLE[index];
     if (entry->key == board->hash && entry->depth == depth) {
+        hits += entry->value;
         return entry->value;
     }
     unsigned long long result = 0;
@@ -46,10 +49,11 @@ void perft_test(char *fen, unsigned long long *expected, int count) {
     board_load_fen(&board, fen);
     board_print(&board);
     for (int depth = 0; depth < count; depth++) {
+        hits = 0;
         unsigned long long actual = perft(&board, depth);
         char *result = actual == expected[depth] ? "PASS" : "FAIL";
-        printf("%s: depth = %2d, expected = %12llu, actual = %12llu\n",
-            result, depth, expected[depth], actual);
+        printf("%s: depth = %2d, expected = %12llu, actual = %12llu, hits = %g%%\n",
+            result, depth, expected[depth], actual, 100.0 * hits / actual);
     }
     printf("\n");
 }
