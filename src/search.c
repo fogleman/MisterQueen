@@ -99,7 +99,7 @@ void search(Board *board, Move *result) {
     for (int depth = 1; depth <= 8; depth++) {
         int score = root_search(board, depth, &move);
         printf("%d, %d, ", depth, score);
-        move_print(board, &move);
+        print_move(board, &move);
     }
     memcpy(result, &move, sizeof(Move));
 }

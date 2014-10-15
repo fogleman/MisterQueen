@@ -22,7 +22,8 @@ typedef struct {
 void do_move(Board *board, Move *move, Undo *undo);
 void undo_move(Board *board, Move *move, Undo *undo);
 
-void move_notation(Board *board, Move *move, char *result);
-void move_print(Board *board, Move *move);
+void notate_move(Board *board, Move *move, Move *moves, int count, char *result);
+void print_move(Board *board, Move *move);
+int parse_move(Board *board, char *notation, Move *move);
 
 #endif

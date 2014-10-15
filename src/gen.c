@@ -1,3 +1,4 @@
+#include <string.h>
 #include "gen.h"
 
 #define EMIT_MOVE(m, a, b) \
@@ -433,12 +434,37 @@ int gen_moves(Board *board, Move *moves) {
     }
 }
 
+int gen_legal_moves(Board *board, Move *moves) {
+    Move *ptr = moves;
+    Undo undo;
+    Move temp[MAX_MOVES];
+    int count = gen_moves(board, temp);
+    for (int i = 0; i < count; i++) {
+        Move *move = &temp[i];
+        do_move(board, move, &undo);
+        if (!is_illegal(board)) {
+            memcpy(moves++, move, sizeof(Move));
+        }
+        undo_move(board, move, &undo);
+    }
+    return moves - ptr;
+}
+
 int gen_attacks(Board *board, Move *moves) {
     if (board->color) {
         return gen_black_attacks(board, moves);
     }
     else {
         return gen_white_attacks(board, moves);
+    }
+}
+
+int gen_checks(Board *board, Move *moves) {
+    if (board->color) {
+        return gen_black_checks(board, moves);
+    }
+    else {
+        return gen_white_checks(board, moves);
     }
 }
 
@@ -460,4 +486,9 @@ int is_illegal(Board *board) {
     else {
         return gen_white_checks(board, moves);
     }
+}
+
+int has_legal_moves(Board *board) {
+    Move moves[MAX_MOVES];
+    return gen_legal_moves(board, moves);
 }
