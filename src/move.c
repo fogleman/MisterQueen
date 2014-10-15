@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "gen.h"
 #include "move.h"
+#include "util.h"
 
 #define TOGGLE_HASH(board) \
     board->hash ^= HASH_CASTLE[board->castle]; \
@@ -245,4 +247,28 @@ int parse_move(Board *board, char *notation, Move *move) {
         }
     }
     return 0;
+}
+
+void parse_pgn(Board *board, char *pgn) {
+    board_reset(board);
+    char *temp = calloc(strlen(pgn) + 1, sizeof(char));
+    strcpy(temp, pgn);
+    char *key;
+    char *token = tokenize(temp, " ", &key);
+    while (token) {
+        printf("%s\n", token);
+        Move move;
+        if (parse_move(board, token, &move)) {
+            Undo undo;
+            do_move(board, &move, &undo);
+        }
+        else {
+            printf("MOVE NOT FOUND: ");
+            print_move(board, &move);
+            break;
+        }
+        board_print(board);
+        token = tokenize(NULL, " ", &key);
+    }
+    free(temp);
 }

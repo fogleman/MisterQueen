@@ -25,5 +25,6 @@ void undo_move(Board *board, Move *move, Undo *undo);
 void notate_move(Board *board, Move *move, Move *moves, int count, char *result);
 void print_move(Board *board, Move *move);
 int parse_move(Board *board, char *notation, Move *move);
+void parse_pgn(Board *board, char *pgn);
 
 #endif
