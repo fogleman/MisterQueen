@@ -39,10 +39,34 @@
 #define CASTLE_BLACK_KING 4
 #define CASTLE_BLACK_QUEEN 8
 
+#define MATERIAL_PAWN 100
+#define MATERIAL_KNIGHT 320
+#define MATERIAL_BISHOP 330
+#define MATERIAL_ROOK 500
+#define MATERIAL_QUEEN 900
+#define MATERIAL_KING 20000
+
+extern const int POSITION_WHITE_PAWN[64];
+extern const int POSITION_WHITE_KNIGHT[64];
+extern const int POSITION_WHITE_BISHOP[64];
+extern const int POSITION_WHITE_ROOK[64];
+extern const int POSITION_WHITE_QUEEN[64];
+extern const int POSITION_WHITE_KING[64];
+extern const int POSITION_BLACK_PAWN[64];
+extern const int POSITION_BLACK_KNIGHT[64];
+extern const int POSITION_BLACK_BISHOP[64];
+extern const int POSITION_BLACK_ROOK[64];
+extern const int POSITION_BLACK_QUEEN[64];
+extern const int POSITION_BLACK_KING[64];
+
 typedef struct {
     int squares[64];
     int color;
     int castle;
+    int white_material;
+    int black_material;
+    int white_position;
+    int black_position;
     bb ep;
     bb all;
     bb white;

@@ -42,26 +42,38 @@ void board_set(Board *board, int sq, int piece) {
             switch (PIECE(previous)) {
                 case PAWN:
                     board->black_pawns &= mask;
+                    board->black_material -= MATERIAL_PAWN;
+                    board->black_position -= POSITION_BLACK_PAWN[sq];
                     board->hash ^= HASH_BLACK_PAWN[sq];
                     break;
                 case KNIGHT:
                     board->black_knights &= mask;
+                    board->black_material -= MATERIAL_KNIGHT;
+                    board->black_position -= POSITION_BLACK_KNIGHT[sq];
                     board->hash ^= HASH_BLACK_KNIGHT[sq];
                     break;
                 case BISHOP:
                     board->black_bishops &= mask;
+                    board->black_material -= MATERIAL_BISHOP;
+                    board->black_position -= POSITION_BLACK_BISHOP[sq];
                     board->hash ^= HASH_BLACK_BISHOP[sq];
                     break;
                 case ROOK:
                     board->black_rooks &= mask;
+                    board->black_material -= MATERIAL_ROOK;
+                    board->black_position -= POSITION_BLACK_ROOK[sq];
                     board->hash ^= HASH_BLACK_ROOK[sq];
                     break;
                 case QUEEN:
                     board->black_queens &= mask;
+                    board->black_material -= MATERIAL_QUEEN;
+                    board->black_position -= POSITION_BLACK_QUEEN[sq];
                     board->hash ^= HASH_BLACK_QUEEN[sq];
                     break;
                 case KING:
                     board->black_kings &= mask;
+                    board->black_material -= MATERIAL_KING;
+                    board->black_position -= POSITION_BLACK_KING[sq];
                     board->hash ^= HASH_BLACK_KING[sq];
                     break;
             }
@@ -71,26 +83,38 @@ void board_set(Board *board, int sq, int piece) {
             switch (PIECE(previous)) {
                 case PAWN:
                     board->white_pawns &= mask;
+                    board->white_material -= MATERIAL_PAWN;
+                    board->white_position -= POSITION_WHITE_PAWN[sq];
                     board->hash ^= HASH_WHITE_PAWN[sq];
                     break;
                 case KNIGHT:
                     board->white_knights &= mask;
+                    board->white_material -= MATERIAL_KNIGHT;
+                    board->white_position -= POSITION_WHITE_KNIGHT[sq];
                     board->hash ^= HASH_WHITE_KNIGHT[sq];
                     break;
                 case BISHOP:
                     board->white_bishops &= mask;
+                    board->white_material -= MATERIAL_BISHOP;
+                    board->white_position -= POSITION_WHITE_BISHOP[sq];
                     board->hash ^= HASH_WHITE_BISHOP[sq];
                     break;
                 case ROOK:
                     board->white_rooks &= mask;
+                    board->white_material -= MATERIAL_ROOK;
+                    board->white_position -= POSITION_WHITE_ROOK[sq];
                     board->hash ^= HASH_WHITE_ROOK[sq];
                     break;
                 case QUEEN:
                     board->white_queens &= mask;
+                    board->white_material -= MATERIAL_QUEEN;
+                    board->white_position -= POSITION_WHITE_QUEEN[sq];
                     board->hash ^= HASH_WHITE_QUEEN[sq];
                     break;
                 case KING:
                     board->white_kings &= mask;
+                    board->white_material -= MATERIAL_KING;
+                    board->white_position -= POSITION_WHITE_KING[sq];
                     board->hash ^= HASH_WHITE_KING[sq];
                     break;
             }
@@ -104,26 +128,38 @@ void board_set(Board *board, int sq, int piece) {
             switch (PIECE(piece)) {
                 case PAWN:
                     board->black_pawns |= bit;
+                    board->black_material += MATERIAL_PAWN;
+                    board->black_position += POSITION_BLACK_PAWN[sq];
                     board->hash ^= HASH_BLACK_PAWN[sq];
                     break;
                 case KNIGHT:
                     board->black_knights |= bit;
+                    board->black_material += MATERIAL_KNIGHT;
+                    board->black_position += POSITION_BLACK_KNIGHT[sq];
                     board->hash ^= HASH_BLACK_KNIGHT[sq];
                     break;
                 case BISHOP:
                     board->black_bishops |= bit;
+                    board->black_material += MATERIAL_BISHOP;
+                    board->black_position += POSITION_BLACK_BISHOP[sq];
                     board->hash ^= HASH_BLACK_BISHOP[sq];
                     break;
                 case ROOK:
                     board->black_rooks |= bit;
+                    board->black_material += MATERIAL_ROOK;
+                    board->black_position += POSITION_BLACK_ROOK[sq];
                     board->hash ^= HASH_BLACK_ROOK[sq];
                     break;
                 case QUEEN:
                     board->black_queens |= bit;
+                    board->black_material += MATERIAL_QUEEN;
+                    board->black_position += POSITION_BLACK_QUEEN[sq];
                     board->hash ^= HASH_BLACK_QUEEN[sq];
                     break;
                 case KING:
                     board->black_kings |= bit;
+                    board->black_material += MATERIAL_KING;
+                    board->black_position += POSITION_BLACK_KING[sq];
                     board->hash ^= HASH_BLACK_KING[sq];
                     break;
             }
@@ -133,26 +169,38 @@ void board_set(Board *board, int sq, int piece) {
             switch (PIECE(piece)) {
                 case PAWN:
                     board->white_pawns |= bit;
+                    board->white_material += MATERIAL_PAWN;
+                    board->white_position += POSITION_WHITE_PAWN[sq];
                     board->hash ^= HASH_WHITE_PAWN[sq];
                     break;
                 case KNIGHT:
                     board->white_knights |= bit;
+                    board->white_material += MATERIAL_KNIGHT;
+                    board->white_position += POSITION_WHITE_KNIGHT[sq];
                     board->hash ^= HASH_WHITE_KNIGHT[sq];
                     break;
                 case BISHOP:
                     board->white_bishops |= bit;
+                    board->white_material += MATERIAL_BISHOP;
+                    board->white_position += POSITION_WHITE_BISHOP[sq];
                     board->hash ^= HASH_WHITE_BISHOP[sq];
                     break;
                 case ROOK:
                     board->white_rooks |= bit;
+                    board->white_material += MATERIAL_ROOK;
+                    board->white_position += POSITION_WHITE_ROOK[sq];
                     board->hash ^= HASH_WHITE_ROOK[sq];
                     break;
                 case QUEEN:
                     board->white_queens |= bit;
+                    board->white_material += MATERIAL_QUEEN;
+                    board->white_position += POSITION_WHITE_QUEEN[sq];
                     board->hash ^= HASH_WHITE_QUEEN[sq];
                     break;
                 case KING:
                     board->white_kings |= bit;
+                    board->white_material += MATERIAL_KING;
+                    board->white_position += POSITION_WHITE_KING[sq];
                     board->hash ^= HASH_WHITE_KING[sq];
                     break;
             }
@@ -249,3 +297,135 @@ void board_load_fen(Board *board, char *fen) {
     }
     i++;
 }
+
+const int POSITION_WHITE_PAWN[64] = {
+      0,  0,  0,  0,  0,  0,  0,  0,
+      5, 10, 10,-20,-20, 10, 10,  5,
+      5, -5,-10,  0,  0,-10, -5,  5,
+      0,  0,  0, 20, 20,  0,  0,  0,
+      5,  5, 10, 25, 25, 10,  5,  5,
+     10, 10, 20, 30, 30, 20, 10, 10,
+     50, 50, 50, 50, 50, 50, 50, 50,
+      0,  0,  0,  0,  0,  0,  0,  0,
+};
+
+const int POSITION_WHITE_KNIGHT[64] = {
+    -50,-40,-30,-30,-30,-30,-40,-50,
+    -40,-20,  0,  5,  5,  0,-20,-40,
+    -30,  5, 10, 15, 15, 10,  5,-30,
+    -30,  0, 15, 20, 20, 15,  0,-30,
+    -30,  5, 15, 20, 20, 15,  5,-30,
+    -30,  0, 10, 15, 15, 10,  0,-30,
+    -40,-20,  0,  0,  0,  0,-20,-40,
+    -50,-40,-30,-30,-30,-30,-40,-50,
+};
+
+const int POSITION_WHITE_BISHOP[64] = {
+    -20,-10,-10,-10,-10,-10,-10,-20,
+    -10,  5,  0,  0,  0,  0,  5,-10,
+    -10, 10, 10, 10, 10, 10, 10,-10,
+    -10,  0, 10, 10, 10, 10,  0,-10,
+    -10,  5,  5, 10, 10,  5,  5,-10,
+    -10,  0,  5, 10, 10,  5,  0,-10,
+    -10,  0,  0,  0,  0,  0,  0,-10,
+    -20,-10,-10,-10,-10,-10,-10,-20,
+};
+
+const int POSITION_WHITE_ROOK[64] = {
+      0,  0,  0,  5,  5,  0,  0,  0,
+     -5,  0,  0,  0,  0,  0,  0, -5,
+     -5,  0,  0,  0,  0,  0,  0, -5,
+     -5,  0,  0,  0,  0,  0,  0, -5,
+     -5,  0,  0,  0,  0,  0,  0, -5,
+     -5,  0,  0,  0,  0,  0,  0, -5,
+      5, 10, 10, 10, 10, 10, 10,  5,
+      0,  0,  0,  0,  0,  0,  0,  0,
+};
+
+const int POSITION_WHITE_QUEEN[64] = {
+    -20,-10,-10, -5, -5,-10,-10,-20,
+    -10,  0,  5,  0,  0,  0,  0,-10,
+    -10,  5,  5,  5,  5,  5,  0,-10,
+      0,  0,  5,  5,  5,  5,  0, -5,
+     -5,  0,  5,  5,  5,  5,  0, -5,
+    -10,  0,  5,  5,  5,  5,  0,-10,
+    -10,  0,  0,  0,  0,  0,  0,-10,
+    -20,-10,-10, -5, -5,-10,-10,-20,
+};
+
+const int POSITION_WHITE_KING[64] = {
+     20, 30, 10,  0,  0, 10, 30, 20,
+     20, 20,  0,  0,  0,  0, 20, 20,
+    -10,-20,-20,-20,-20,-20,-20,-10,
+    -20,-30,-30,-40,-40,-30,-30,-20,
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -30,-40,-40,-50,-50,-40,-40,-30,
+};
+
+const int POSITION_BLACK_PAWN[64] = {
+      0,  0,  0,  0,  0,  0,  0,  0,
+     50, 50, 50, 50, 50, 50, 50, 50,
+     10, 10, 20, 30, 30, 20, 10, 10,
+      5,  5, 10, 25, 25, 10,  5,  5,
+      0,  0,  0, 20, 20,  0,  0,  0,
+      5, -5,-10,  0,  0,-10, -5,  5,
+      5, 10, 10,-20,-20, 10, 10,  5,
+      0,  0,  0,  0,  0,  0,  0,  0,
+};
+
+const int POSITION_BLACK_KNIGHT[64] = {
+    -50,-40,-30,-30,-30,-30,-40,-50,
+    -40,-20,  0,  0,  0,  0,-20,-40,
+    -30,  0, 10, 15, 15, 10,  0,-30,
+    -30,  5, 15, 20, 20, 15,  5,-30,
+    -30,  0, 15, 20, 20, 15,  0,-30,
+    -30,  5, 10, 15, 15, 10,  5,-30,
+    -40,-20,  0,  5,  5,  0,-20,-40,
+    -50,-40,-30,-30,-30,-30,-40,-50,
+};
+
+const int POSITION_BLACK_BISHOP[64] = {
+    -20,-10,-10,-10,-10,-10,-10,-20,
+    -10,  0,  0,  0,  0,  0,  0,-10,
+    -10,  0,  5, 10, 10,  5,  0,-10,
+    -10,  5,  5, 10, 10,  5,  5,-10,
+    -10,  0, 10, 10, 10, 10,  0,-10,
+    -10, 10, 10, 10, 10, 10, 10,-10,
+    -10,  5,  0,  0,  0,  0,  5,-10,
+    -20,-10,-10,-10,-10,-10,-10,-20,
+};
+
+const int POSITION_BLACK_ROOK[64] = {
+      0,  0,  0,  0,  0,  0,  0,  0,
+      5, 10, 10, 10, 10, 10, 10,  5,
+     -5,  0,  0,  0,  0,  0,  0, -5,
+     -5,  0,  0,  0,  0,  0,  0, -5,
+     -5,  0,  0,  0,  0,  0,  0, -5,
+     -5,  0,  0,  0,  0,  0,  0, -5,
+     -5,  0,  0,  0,  0,  0,  0, -5,
+      0,  0,  0,  5,  5,  0,  0,  0,
+};
+
+const int POSITION_BLACK_QUEEN[64] = {
+    -20,-10,-10, -5, -5,-10,-10,-20,
+    -10,  0,  0,  0,  0,  0,  0,-10,
+    -10,  0,  5,  5,  5,  5,  0,-10,
+     -5,  0,  5,  5,  5,  5,  0, -5,
+      0,  0,  5,  5,  5,  5,  0, -5,
+    -10,  5,  5,  5,  5,  5,  0,-10,
+    -10,  0,  5,  0,  0,  0,  0,-10,
+    -20,-10,-10, -5, -5,-10,-10,-20,
+};
+
+const int POSITION_BLACK_KING[64] = {
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -20,-30,-30,-40,-40,-30,-30,-20,
+    -10,-20,-20,-20,-20,-20,-20,-10,
+     20, 20,  0,  0,  0,  0, 20, 20,
+     20, 30, 10,  0,  0, 10, 30, 20,
+};

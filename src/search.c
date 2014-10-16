@@ -74,8 +74,8 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
 }
 
 int root_search(Board *board, int depth, Move *move) {
-    int alpha = -SCORE_INF;
-    int beta = SCORE_INF;
+    int alpha = -100000;
+    int beta = 100000;
     Undo undo;
     Move moves[MAX_MOVES];
     int count = gen_moves(board, moves);
