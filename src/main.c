@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "bb.h"
 #include "board.h"
 #include "move.h"
@@ -14,8 +15,22 @@ int main(int argc, char **argv) {
     while (1) {
         board_print(&board);
         search(&board, 1, &move);
+        print_move(&board, &move);
         make_move(&board, &move);
-        // break;
+
+        board_print(&board);
+        while (1) {
+            char notation[16];
+            printf("Enter move: ");
+            scanf("%15s", notation);
+            if (parse_move(&board, notation, &move)) {
+                make_move(&board, &move);
+                break;
+            }
+            else {
+                printf("Invalid move!\n");
+            }
+        }
     }
     return 0;
 }
