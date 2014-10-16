@@ -4,41 +4,12 @@
 #include "eval.h"
 #include "gen.h"
 #include "move.h"
+#include "table.h"
 #include "util.h"
 
-#define SIZE (1 << 22)
-#define MASK ((SIZE) - 1)
-
-typedef struct {
-    bb key;
-    bb value;
-    int depth;
-} Entry;
-
-typedef struct {
-    bb key;
-    bb value;
-} QEntry;
-
-Entry TABLE[SIZE];
-QEntry QTABLE[SIZE];
+static Table TABLE;
 
 int quiesce(Board *board, int alpha, int beta) {
-    int index = board->hash & MASK;
-    QEntry *entry = &QTABLE[index];
-    if (entry->key == board->hash) {
-        int score = entry->value;
-        if (score >= beta) {
-            return beta;
-        }
-        else if (score < alpha) {
-            return alpha;
-        }
-        else {
-            return score;
-        }
-    }
-
     int score = evaluate(board);
     if (score >= beta) {
         return beta;
@@ -66,19 +37,14 @@ int quiesce(Board *board, int alpha, int beta) {
             alpha = score;
         }
     }
-
-    entry->key = board->hash;
-    entry->value = alpha;
     return alpha;
 }
 
 int alpha_beta(Board *board, int depth, int alpha, int beta) {
-    int index = board->hash & MASK;
-    Entry *entry = &TABLE[index];
+    Entry *entry = table_get(&TABLE, board->hash);
     if (entry->key == board->hash && entry->depth == depth) {
         return entry->value;
     }
-
     if (depth <= 0) {
         // return evaluate(board);
         return quiesce(board, alpha, beta);
@@ -104,10 +70,7 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
             alpha = score;
         }
     }
-
-    entry->key = board->hash;
-    entry->value = alpha;
-    entry->depth = depth;
+    table_set(&TABLE, board->hash, depth, alpha, NULL);
     return alpha;
 }
 
@@ -132,6 +95,7 @@ int root_search(Board *board, int depth, int alpha, int beta, Move *result) {
 }
 
 void search(Board *board, double duration, Move *move) {
+    table_alloc(&TABLE, 22);
     double start = now();
     int alpha = -INF;
     int beta = INF;
@@ -153,4 +117,5 @@ void search(Board *board, double duration, Move *move) {
         beta = score + window;
         depth++;
     }
+    table_free(&TABLE);
 }
