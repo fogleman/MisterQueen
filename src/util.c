@@ -1,4 +1,5 @@
 #include <string.h>
+#include <time.h>
 
 char *tokenize(char *str, const char *delim, char **key) {
     char *result;
@@ -16,4 +17,8 @@ char *tokenize(char *str, const char *delim, char **key) {
     }
     *key = str;
     return result;
+}
+
+double now() {
+    return (double)clock() / CLOCKS_PER_SEC;
 }

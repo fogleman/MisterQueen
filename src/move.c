@@ -11,6 +11,21 @@
         board->hash ^= HASH_EP[LSB(board->ep) % 8]; \
     }
 
+void make_move(Board *board, Move *move) {
+    Undo undo; // throw-away
+    do_move(board, move, &undo);
+}
+
+void do_null_move(Board *board) {
+    board->color ^= BLACK;
+    board->hash ^= HASH_COLOR;
+}
+
+void undo_null_move(Board *board) {
+    board->color ^= BLACK;
+    board->hash ^= HASH_COLOR;
+}
+
 void do_move(Board *board, Move *move, Undo *undo) {
     TOGGLE_HASH(board);
     undo->piece = board->squares[move->src];
@@ -259,8 +274,7 @@ void parse_pgn(Board *board, char *pgn) {
         printf("%s\n", token);
         Move move;
         if (parse_move(board, token, &move)) {
-            Undo undo;
-            do_move(board, &move, &undo);
+            make_move(board, &move);
         }
         else {
             printf("MOVE NOT FOUND: ");

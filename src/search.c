@@ -4,8 +4,9 @@
 #include "eval.h"
 #include "gen.h"
 #include "move.h"
+#include "util.h"
 
-#define SIZE (1 << 23)
+#define SIZE (1 << 22)
 #define MASK ((SIZE) - 1)
 
 typedef struct {
@@ -14,9 +15,30 @@ typedef struct {
     int depth;
 } Entry;
 
+typedef struct {
+    bb key;
+    bb value;
+} QEntry;
+
 Entry TABLE[SIZE];
+QEntry QTABLE[SIZE];
 
 int quiesce(Board *board, int alpha, int beta) {
+    int index = board->hash & MASK;
+    QEntry *entry = &QTABLE[index];
+    if (entry->key == board->hash) {
+        int score = entry->value;
+        if (score >= beta) {
+            return beta;
+        }
+        else if (score < alpha) {
+            return alpha;
+        }
+        else {
+            return score;
+        }
+    }
+
     int score = evaluate(board);
     if (score >= beta) {
         return beta;
@@ -28,9 +50,15 @@ int quiesce(Board *board, int alpha, int beta) {
     Move moves[MAX_MOVES];
     int count = gen_attacks(board, moves);
     for (int i = 0; i < count; i++) {
-        do_move(board, &moves[i], &undo);
+        Move *move = &moves[i];
+        int p1 = PIECE(board->squares[move->src]);
+        int p2 = PIECE(board->squares[move->dst]);
+        if (p2 < p1) {
+            continue;
+        }
+        do_move(board, move, &undo);
         int score = -quiesce(board, -beta, -alpha);
-        undo_move(board, &moves[i], &undo);
+        undo_move(board, move, &undo);
         if (score >= beta) {
             return beta;
         }
@@ -38,6 +66,9 @@ int quiesce(Board *board, int alpha, int beta) {
             alpha = score;
         }
     }
+
+    entry->key = board->hash;
+    entry->value = alpha;
     return alpha;
 }
 
@@ -48,17 +79,24 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
         return entry->value;
     }
 
-    if (depth == 0) {
+    if (depth <= 0) {
         // return evaluate(board);
         return quiesce(board, alpha, beta);
+    }
+    do_null_move(board);
+    int score = -alpha_beta(board, depth - 1 - 2, -beta, -beta + 1);
+    undo_null_move(board);
+    if (score >= beta) {
+        return beta;
     }
     Undo undo;
     Move moves[MAX_MOVES];
     int count = gen_moves(board, moves);
     for (int i = 0; i < count; i++) {
-        do_move(board, &moves[i], &undo);
+        Move *move = &moves[i];
+        do_move(board, move, &undo);
         int score = -alpha_beta(board, depth - 1, -beta, -alpha);
-        undo_move(board, &moves[i], &undo);
+        undo_move(board, move, &undo);
         if (score >= beta) {
             return beta;
         }
@@ -73,33 +111,46 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
     return alpha;
 }
 
-int root_search(Board *board, int depth, Move *move) {
-    int alpha = -100000;
-    int beta = 100000;
+int root_search(Board *board, int depth, int alpha, int beta, Move *result) {
     Undo undo;
     Move moves[MAX_MOVES];
     int count = gen_moves(board, moves);
     for (int i = 0; i < count; i++) {
-        do_move(board, &moves[i], &undo);
+        Move *move = &moves[i];
+        do_move(board, move, &undo);
         int score = -alpha_beta(board, depth - 1, -beta, -alpha);
-        undo_move(board, &moves[i], &undo);
+        undo_move(board, move, &undo);
         if (score >= beta) {
             return beta;
         }
         if (score > alpha) {
             alpha = score;
-            memcpy(move, &moves[i], sizeof(Move));
+            memcpy(result, move, sizeof(Move));
         }
     }
     return alpha;
 }
 
-void search(Board *board, Move *result) {
-    Move move;
-    for (int depth = 1; depth <= 8; depth++) {
-        int score = root_search(board, depth, &move);
+void search(Board *board, double duration, Move *move) {
+    double start = now();
+    int alpha = -INF;
+    int beta = INF;
+    int window = 100;
+    int depth = 1;
+    while (1) {
+        int score = root_search(board, depth, alpha, beta, move);
+        if (score <= alpha || score >= beta) {
+            alpha = -INF;
+            beta = INF;
+            continue;
+        }
         printf("%d, %d, ", depth, score);
-        print_move(board, &move);
+        print_move(board, move);
+        if (now() - start > duration) {
+            break;
+        }
+        alpha = score - window;
+        beta = score + window;
+        depth++;
     }
-    memcpy(result, &move, sizeof(Move));
 }
