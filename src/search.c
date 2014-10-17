@@ -41,6 +41,9 @@ int quiesce(Board *board, int alpha, int beta) {
 }
 
 int alpha_beta(Board *board, int depth, int alpha, int beta) {
+    if (is_illegal(board)) {
+        return -INF;
+    }
     Entry *entry = table_get(&TABLE, board->hash);
     if (entry->key == board->hash && entry->depth == depth) {
         return entry->value;
