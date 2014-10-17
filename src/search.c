@@ -42,7 +42,7 @@ int quiesce(Board *board, int alpha, int beta) {
 
 int alpha_beta(Board *board, int depth, int alpha, int beta) {
     if (is_illegal(board)) {
-        return -INF;
+        return board->color ? -INF : INF;
     }
     Entry *entry = table_get(&TABLE, board->hash);
     if (entry->key == board->hash && entry->depth == depth) {
@@ -86,6 +86,8 @@ int root_search(Board *board, int depth, int alpha, int beta, Move *result) {
         do_move(board, move, &undo);
         int score = -alpha_beta(board, depth - 1, -beta, -alpha);
         undo_move(board, move, &undo);
+        // printf("%d: ", score);
+        // print_move(board, move);
         if (score >= beta) {
             return beta;
         }
@@ -116,8 +118,8 @@ void search(Board *board, double duration, Move *move) {
         if (now() - start > duration) {
             break;
         }
-        alpha = score - window;
-        beta = score + window;
+        // alpha = score - window;
+        // beta = score + window;
         depth++;
     }
     table_free(&TABLE);

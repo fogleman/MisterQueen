@@ -138,14 +138,14 @@ bb bb_slide(int sq, int truncate, bb obstacles, int directions[4][2]) {
     return value;
 }
 
-bb rook_slide(int sq, int truncate, bb obstacles) {
+bb bb_slide_rook(int sq, int truncate, bb obstacles) {
     int directions[4][2] = {
         {-1, 0}, {1, 0}, {0, -1}, {0, 1}
     };
     return bb_slide(sq, truncate, obstacles, directions);
 }
 
-bb bishop_slide(int sq, int truncate, bb obstacles) {
+bb bb_slide_bishop(int sq, int truncate, bb obstacles) {
     int directions[4][2] = {
         {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
     };
@@ -155,8 +155,8 @@ bb bishop_slide(int sq, int truncate, bb obstacles) {
 void bb_init() {
     // BB_BISHOP_6, BB_ROOK_6
     for (int sq = 0; sq < 64; sq++) {
-        BB_BISHOP_6[sq] = bishop_slide(sq, 1, 0L);
-        BB_ROOK_6[sq] = rook_slide(sq, 1, 0L);
+        BB_BISHOP_6[sq] = bb_slide_bishop(sq, 1, 0L);
+        BB_ROOK_6[sq] = bb_slide_rook(sq, 1, 0L);
     }
     // BB_KNIGHT
     const int knight_offsets[8][2] = {
@@ -211,7 +211,7 @@ void bb_init() {
                     obstacles |= BIT(squares[j]);
                 }
             }
-            bb value = bishop_slide(sq, 0, obstacles);
+            bb value = bb_slide_bishop(sq, 0, obstacles);
             int index = (obstacles * MAGIC_BISHOP[sq]) >> SHIFT_BISHOP[sq];
             bb previous = ATTACK_BISHOP[offset + index];
             if (previous && previous != value) {
@@ -235,7 +235,7 @@ void bb_init() {
                     obstacles |= BIT(squares[j]);
                 }
             }
-            bb value = rook_slide(sq, 0, obstacles);
+            bb value = bb_slide_rook(sq, 0, obstacles);
             int index = (obstacles * MAGIC_ROOK[sq]) >> SHIFT_ROOK[sq];
             bb previous = ATTACK_ROOK[offset + index];
             if (previous && previous != value) {

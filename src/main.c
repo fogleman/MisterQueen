@@ -15,11 +15,6 @@ int main(int argc, char **argv) {
     // board_load_fen(&board, "rn2kb1r/pp1q2p1/2p1pn2/3p3p/3P1N2/2N2P2/PPP3PP/R1BQKB1R w KQkq - 4 10");
     while (1) {
         board_print(&board);
-        search(&board, 1, &move);
-        print_move(&board, &move);
-        make_move(&board, &move);
-
-        board_print(&board);
         while (1) {
             char notation[16];
             printf("Enter move: ");
@@ -32,6 +27,11 @@ int main(int argc, char **argv) {
                 printf("Invalid move!\n");
             }
         }
+
+        board_print(&board);
+        search(&board, 1, &move);
+        print_move(&board, &move);
+        make_move(&board, &move);
     }
     return 0;
 }
