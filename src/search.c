@@ -9,8 +9,11 @@
 
 static Table TABLE;
 
-void sort_moves(Board *board, Move *moves, int count, int *indexes) {
+#define XOR_SWAP(a, b) a = a ^ b; b = a ^ b; a = a ^ b;
+
+void sort_moves(Board *board, Move *moves, int count) {
     int scores[MAX_MOVES];
+    int indexes[MAX_MOVES];
     Undo undo;
     for (int i = 0; i < count; i++) {
         Move *move = moves + i;
@@ -22,15 +25,15 @@ void sort_moves(Board *board, Move *moves, int count, int *indexes) {
     for (int i = 1; i < count; i++) {
         int j = i;
         while (j > 0 && scores[j - 1] > scores[j]) {
-            int temp;
-            temp = scores[j];
-            scores[j] = scores[j - 1];
-            scores[j - 1] = temp;
-            temp = indexes[j];
-            indexes[j] = indexes[j - 1];
-            indexes[j - 1] = temp;
+            XOR_SWAP(scores[j - 1], scores[j]);
+            XOR_SWAP(indexes[j - 1], indexes[j]);
             j--;
         }
+    }
+    Move temp[MAX_MOVES];
+    memcpy(temp, moves, sizeof(Move) * count);
+    for (int i = 0; i < count; i++) {
+        memcpy(moves + i, temp + indexes[i], sizeof(Move));
     }
 }
 
@@ -44,11 +47,10 @@ int quiesce(Board *board, int alpha, int beta) {
     }
     Undo undo;
     Move moves[MAX_MOVES];
-    int indexes[MAX_MOVES];
     int count = gen_attacks(board, moves);
-    sort_moves(board, moves, count, indexes);
+    sort_moves(board, moves, count);
     for (int i = 0; i < count; i++) {
-        Move *move = &moves[indexes[i]];
+        Move *move = &moves[i];
         int p1 = PIECE(board->squares[move->src]);
         int p2 = PIECE(board->squares[move->dst]);
         if (p2 < p1) {
@@ -86,17 +88,16 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
     }
     Undo undo;
     Move moves[MAX_MOVES];
-    int indexes[MAX_MOVES];
     int count = gen_moves(board, moves);
-    sort_moves(board, moves, count, indexes);
-    int legal = 0;
+    sort_moves(board, moves, count);
+    int can_move = 0;
     for (int i = 0; i < count; i++) {
-        Move *move = &moves[indexes[i]];
+        Move *move = &moves[i];
         do_move(board, move, &undo);
         int score = -alpha_beta(board, depth - 1, -beta, -alpha);
         undo_move(board, move, &undo);
         if (score > -INF) {
-            legal = 1;
+            can_move = 1;
         }
         if (score >= beta) {
             return beta;
@@ -105,7 +106,7 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
             alpha = score;
         }
     }
-    if (!legal) {
+    if (!can_move) {
         // TODO: use depth to delay mate as much as possible
         if (is_check(board)) {
             return -INF + 1;
