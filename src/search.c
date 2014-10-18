@@ -11,6 +11,9 @@ static Table TABLE;
 
 #define XOR_SWAP(a, b) a = a ^ b; b = a ^ b; a = a ^ b;
 
+// TODO: don't use a global here
+static int root_depth;
+
 void sort_moves(Board *board, Move *moves, int count) {
     int scores[MAX_MOVES];
     int indexes[MAX_MOVES];
@@ -54,7 +57,7 @@ int quiesce(Board *board, int alpha, int beta) {
         int p1 = PIECE(board->squares[move->src]);
         int p2 = PIECE(board->squares[move->dst]);
         if (p2 < p1) {
-            continue;
+            // continue;
         }
         do_move(board, move, &undo);
         int score = -quiesce(board, -beta, -alpha);
@@ -107,9 +110,8 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
         }
     }
     if (!can_move) {
-        // TODO: use depth to delay mate as much as possible
         if (is_check(board)) {
-            return -INF + 1;
+            return -MATE + root_depth - depth;
         }
         else {
             return 0;
@@ -128,8 +130,6 @@ int root_search(Board *board, int depth, int alpha, int beta, Move *result) {
         do_move(board, move, &undo);
         int score = -alpha_beta(board, depth - 1, -beta, -alpha);
         undo_move(board, move, &undo);
-        // printf("%d: ", score);
-        // print_move(board, move);
         if (score >= beta) {
             return beta;
         }
@@ -141,19 +141,26 @@ int root_search(Board *board, int depth, int alpha, int beta, Move *result) {
     return alpha;
 }
 
-void search(Board *board, double duration, Move *move) {
+int search(Board *board, double duration, Move *move) {
+    int result = 1;
     table_alloc(&TABLE, 22);
     double start = now();
     for (int depth = 1; depth < 100; depth++) {
+        root_depth = depth;
         int score = root_search(board, depth, -INF, INF, move);
+        if (score == -INF) {
+            result = 0;
+            break;
+        }
         printf("%d, %d, ", depth, score);
         print_move(board, move);
         if (now() - start > duration) {
             break;
         }
-        if (score == INF - 1 || score == -INF + 1) {
+        if (score <= -MATE + depth || score >= MATE - depth) {
             break;
         }
     }
     table_free(&TABLE);
+    return result;
 }

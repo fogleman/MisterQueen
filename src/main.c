@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include "bb.h"
+#include "bk.h"
 #include "board.h"
 #include "move.h"
 #include "search.h"
 
 int main(int argc, char **argv) {
     bb_init();
+    // bk_tests();
+    // return 0;
     Board board;
     Move move;
     board_reset(&board);
@@ -25,7 +28,9 @@ int main(int argc, char **argv) {
         }
 
         board_print(&board);
-        search(&board, 1, &move);
+        if (!search(&board, 1, &move)) {
+            break;
+        }
         print_move(&board, &move);
         make_move(&board, &move);
     }

@@ -4,8 +4,9 @@
 #include "board.h"
 #include "move.h"
 
-#define INF 100000
+#define INF 1000000
+#define MATE 100000
 
-void search(Board *board, double duration, Move *move);
+int search(Board *board, double duration, Move *move);
 
 #endif
