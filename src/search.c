@@ -106,6 +106,7 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
         }
     }
     if (!legal) {
+        // TODO: use depth to delay mate as much as possible
         if (is_check(board)) {
             return -INF + 1;
         }
@@ -142,8 +143,7 @@ int root_search(Board *board, int depth, int alpha, int beta, Move *result) {
 void search(Board *board, double duration, Move *move) {
     table_alloc(&TABLE, 22);
     double start = now();
-    int depth = 1;
-    while (1) {
+    for (int depth = 1; depth < 100; depth++) {
         int score = root_search(board, depth, -INF, INF, move);
         printf("%d, %d, ", depth, score);
         print_move(board, move);
@@ -153,7 +153,6 @@ void search(Board *board, double duration, Move *move) {
         if (score == INF - 1 || score == -INF + 1) {
             break;
         }
-        depth++;
     }
     table_free(&TABLE);
 }
