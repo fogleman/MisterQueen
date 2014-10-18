@@ -174,12 +174,13 @@ int search(Board *board, double duration, Move *move) {
             result = 0;
             break;
         }
-        printf("%3d, %4d, ", depth, score);
+        double elapsed = now() - start;
+        printf("%.3f: %3d, %4d, ", elapsed, depth, score);
         print_move(board, move);
         printf(" [ ");
         print_pv(board, depth);
         printf("]\n");
-        if (now() - start > duration) {
+        if (elapsed > duration) {
             break;
         }
         if (score <= -MATE + depth || score >= MATE - depth) {
