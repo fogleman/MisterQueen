@@ -247,7 +247,7 @@ void print_move(Board *board, Move *move) {
     Move moves[MAX_MOVES];
     int count = gen_legal_moves(board, moves);
     notate_move(board, move, moves, count, notation);
-    printf("%s\n", notation);
+    printf("%s", notation);
 }
 
 int parse_move(Board *board, char *notation, Move *move) {

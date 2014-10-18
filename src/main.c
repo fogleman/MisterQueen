@@ -32,6 +32,7 @@ int main(int argc, char **argv) {
             break;
         }
         print_move(&board, &move);
+        printf("\n");
         make_move(&board, &move);
     }
     return 0;

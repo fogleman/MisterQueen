@@ -94,6 +94,7 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
     int count = gen_moves(board, moves);
     sort_moves(board, moves, count);
     int can_move = 0;
+    Move *best = NULL;
     for (int i = 0; i < count; i++) {
         Move *move = &moves[i];
         do_move(board, move, &undo);
@@ -107,6 +108,7 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
         }
         if (score > alpha) {
             alpha = score;
+            best = move;
         }
     }
     if (!can_move) {
@@ -117,7 +119,7 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
             return 0;
         }
     }
-    table_set(&TABLE, board->hash, depth, alpha, NULL);
+    table_set(&TABLE, board->hash, depth, alpha, best);
     return alpha;
 }
 
@@ -125,6 +127,8 @@ int root_search(Board *board, int depth, int alpha, int beta, Move *result) {
     Undo undo;
     Move moves[MAX_MOVES];
     int count = gen_moves(board, moves);
+    sort_moves(board, moves, count);
+    Move *best = NULL;
     for (int i = 0; i < count; i++) {
         Move *move = &moves[i];
         do_move(board, move, &undo);
@@ -136,9 +140,27 @@ int root_search(Board *board, int depth, int alpha, int beta, Move *result) {
         if (score > alpha) {
             alpha = score;
             memcpy(result, move, sizeof(Move));
+            best = move;
         }
     }
+    table_set(&TABLE, board->hash, depth, alpha, best);
     return alpha;
+}
+
+void print_pv(Board *board, int depth) {
+    if (depth <= 0) {
+        return;
+    }
+    Entry *entry = table_get(&TABLE, board->hash);
+    if (entry->key != board->hash) {
+        return;
+    }
+    print_move(board, &entry->move);
+    printf(" ");
+    Undo undo;
+    do_move(board, &entry->move, &undo);
+    print_pv(board, depth - 1);
+    undo_move(board, &entry->move, &undo);
 }
 
 int search(Board *board, double duration, Move *move) {
@@ -152,8 +174,11 @@ int search(Board *board, double duration, Move *move) {
             result = 0;
             break;
         }
-        printf("%d, %d, ", depth, score);
+        printf("%3d, %4d, ", depth, score);
         print_move(board, move);
+        printf(" [ ");
+        print_pv(board, depth);
+        printf("]\n");
         if (now() - start > duration) {
             break;
         }
