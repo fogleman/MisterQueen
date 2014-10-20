@@ -14,6 +14,14 @@ int main(int argc, char **argv) {
     board_reset(&board);
     while (1) {
         board_print(&board);
+        if (!search(&board, 10, &move)) {
+            break;
+        }
+        print_move(&board, &move);
+        printf("\n");
+        make_move(&board, &move);
+
+        board_print(&board);
         while (1) {
             char notation[16];
             printf("Enter move: ");
@@ -26,14 +34,6 @@ int main(int argc, char **argv) {
                 printf("Invalid move!\n");
             }
         }
-
-        board_print(&board);
-        if (!search(&board, 1, &move)) {
-            break;
-        }
-        print_move(&board, &move);
-        printf("\n");
-        make_move(&board, &move);
     }
     return 0;
 }

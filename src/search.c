@@ -54,11 +54,11 @@ int quiesce(Board *board, int alpha, int beta) {
     sort_moves(board, moves, count);
     for (int i = 0; i < count; i++) {
         Move *move = &moves[i];
-        int p1 = PIECE(board->squares[move->src]);
-        int p2 = PIECE(board->squares[move->dst]);
-        if (p2 < p1) {
-            // continue;
-        }
+        // int p1 = PIECE(board->squares[move->src]);
+        // int p2 = PIECE(board->squares[move->dst]);
+        // if (p2 < p1) {
+        //     continue;
+        // }
         do_move(board, move, &undo);
         int score = -quiesce(board, -beta, -alpha);
         undo_move(board, move, &undo);
@@ -76,10 +76,10 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
     if (is_illegal(board)) {
         return INF;
     }
-    Entry *entry = table_get(&TABLE, board->hash);
-    if (entry->key == board->hash && entry->depth == depth) {
-        return entry->value;
-    }
+    // Entry *entry = table_get(&TABLE, board->hash);
+    // if (entry->key == board->hash && entry->depth == depth) {
+    //     return entry->value;
+    // }
     if (depth <= 0) {
         return quiesce(board, alpha, beta);
     }
@@ -119,7 +119,7 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
             return 0;
         }
     }
-    table_set(&TABLE, board->hash, depth, alpha, best);
+    // table_set(&TABLE, board->hash, depth, alpha, best);
     return alpha;
 }
 
