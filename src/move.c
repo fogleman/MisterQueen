@@ -140,6 +140,48 @@ void undo_move(Board *board, Move *move, Undo *undo) {
     TOGGLE_HASH(board);
 }
 
+void move_to_string(Move *move, char *str) {
+    char rank1 = '1' + move->src / 8;
+    char file1 = 'a' + move->src % 8;
+    char rank2 = '1' + move->dst / 8;
+    char file2 = 'a' + move->dst % 8;
+    *str++ = file1;
+    *str++ = rank1;
+    *str++ = file2;
+    *str++ = rank2;
+    if (move->promotion) {
+        switch (PIECE(move->promotion)) {
+            case KNIGHT: *str++ = 'n'; break;
+            case BISHOP: *str++ = 'b'; break;
+            case ROOK:   *str++ = 'r'; break;
+            case QUEEN:  *str++ = 'q'; break;
+        }
+    }
+    *str++ = 0;
+}
+
+void move_from_string(Move *move, char *str) {
+    int file1 = str[0] - 'a';
+    int rank1 = str[1] - '1';
+    int file2 = str[2] - 'a';
+    int rank2 = str[3] - '1';
+    int src = rank1 * 8 + file1;
+    int dst = rank2 * 8 + file2;
+    int promotion = EMPTY;
+    switch (str[4]) {
+        case 'n': promotion = KNIGHT; break;
+        case 'b': promotion = BISHOP; break;
+        case 'r': promotion = ROOK; break;
+        case 'q': promotion = QUEEN; break;
+    }
+    if (promotion != EMPTY && rank2 == 0) {
+        promotion |= BLACK;
+    }
+    move->src = src;
+    move->dst = dst;
+    move->promotion = promotion;
+}
+
 void notate_move(Board *board, Move *move, Move *moves, int count, char *result) {
     int piece = board->squares[move->src];
     int capture = board->squares[move->dst];

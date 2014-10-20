@@ -4,9 +4,13 @@
 #include "board.h"
 #include "move.h"
 #include "search.h"
+#include "uci.h"
 
 int main(int argc, char **argv) {
     bb_init();
+    while (1) {
+        parse_line();
+    }
     // bk_tests();
     // return 0;
     Board board;

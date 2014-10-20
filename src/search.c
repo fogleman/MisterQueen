@@ -175,11 +175,14 @@ int search(Board *board, double duration, Move *move) {
             break;
         }
         double elapsed = now() - start;
-        printf("%.3f: %3d, %4d, ", elapsed, depth, score);
-        print_move(board, move);
-        printf(" [ ");
-        print_pv(board, depth);
-        printf("]\n");
+        char move_string[16];
+        move_to_string(move, move_string);
+        printf("info depth %d pv %s\n", depth, move_string);
+        // printf("%.3f: %3d, %4d, ", elapsed, depth, score);
+        // print_move(board, move);
+        // printf(" [ ");
+        // print_pv(board, depth);
+        // printf("]\n");
         if (elapsed > duration) {
             break;
         }

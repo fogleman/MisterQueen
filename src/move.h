@@ -25,6 +25,8 @@ void undo_null_move(Board *board);
 void do_move(Board *board, Move *move, Undo *undo);
 void undo_move(Board *board, Move *move, Undo *undo);
 
+void move_to_string(Move *move, char *str);
+void move_from_string(Move *move, char *str);
 void notate_move(Board *board, Move *move, Move *moves, int count, char *result);
 void print_move(Board *board, Move *move);
 int parse_move(Board *board, char *notation, Move *move);
