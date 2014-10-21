@@ -7,6 +7,8 @@
 #include "table.h"
 #include "util.h"
 
+static volatile int stop_flag;
+
 static Table TABLE;
 
 #define XOR_SWAP(a, b) a = a ^ b; b = a ^ b; a = a ^ b;
@@ -100,6 +102,9 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
         do_move(board, move, &undo);
         int score = -alpha_beta(board, depth - 1, -beta, -alpha);
         undo_move(board, move, &undo);
+        if (stop_flag) {
+            return 0;
+        }
         if (score > -INF) {
             can_move = 1;
         }
@@ -119,7 +124,7 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
             return 0;
         }
     }
-    // table_set(&TABLE, board->hash, depth, alpha, best);
+    table_set(&TABLE, board->hash, depth, alpha, best);
     return alpha;
 }
 
@@ -134,15 +139,18 @@ int root_search(Board *board, int depth, int alpha, int beta, Move *result) {
         do_move(board, move, &undo);
         int score = -alpha_beta(board, depth - 1, -beta, -alpha);
         undo_move(board, move, &undo);
+        if (stop_flag) {
+            return 0;
+        }
         if (score >= beta) {
             return beta;
         }
         if (score > alpha) {
             alpha = score;
-            memcpy(result, move, sizeof(Move));
             best = move;
         }
     }
+    memcpy(result, best, sizeof(Move));
     table_set(&TABLE, board->hash, depth, alpha, best);
     return alpha;
 }
@@ -155,8 +163,9 @@ void print_pv(Board *board, int depth) {
     if (entry->key != board->hash) {
         return;
     }
-    print_move(board, &entry->move);
-    printf(" ");
+    char move_string[16];
+    move_to_string(&entry->move, move_string);
+    printf(" %s", move_string);
     Undo undo;
     do_move(board, &entry->move, &undo);
     print_pv(board, depth - 1);
@@ -164,12 +173,16 @@ void print_pv(Board *board, int depth) {
 }
 
 int search(Board *board, double duration, Move *move) {
+    stop_flag = 0;
     int result = 1;
     table_alloc(&TABLE, 22);
     double start = now();
     for (int depth = 1; depth < 100; depth++) {
         root_depth = depth;
         int score = root_search(board, depth, -INF, INF, move);
+        if (stop_flag) {
+            break;
+        }
         if (score == -INF) {
             result = 0;
             break;
@@ -177,19 +190,25 @@ int search(Board *board, double duration, Move *move) {
         double elapsed = now() - start;
         char move_string[16];
         move_to_string(move, move_string);
-        printf("info depth %d pv %s\n", depth, move_string);
-        // printf("%.3f: %3d, %4d, ", elapsed, depth, score);
-        // print_move(board, move);
-        // printf(" [ ");
-        // print_pv(board, depth);
-        // printf("]\n");
-        if (elapsed > duration) {
+        int millis = elapsed * 1000;
+        printf("info depth %d score cp %d nodes 0 time %d pv",
+            depth, score, millis);
+        print_pv(board, depth);
+        printf("\n");
+        if (duration > 0 && elapsed > duration) {
             break;
         }
         if (score <= -MATE + depth || score >= MATE - depth) {
             break;
         }
     }
+    char move_string[16];
+    move_to_string(move, move_string);
+    printf("bestmove %s\n", move_string);
     table_free(&TABLE);
     return result;
+}
+
+void stop_search() {
+    stop_flag = 1;
 }

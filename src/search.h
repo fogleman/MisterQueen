@@ -8,5 +8,6 @@
 #define MATE 100000
 
 int search(Board *board, double duration, Move *move);
+void stop_search();
 
 #endif
