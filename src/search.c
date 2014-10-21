@@ -17,13 +17,10 @@ static int root_depth;
 void sort_moves(Board *board, Move *moves, int count) {
     int scores[MAX_MOVES];
     int indexes[MAX_MOVES];
-    Undo undo;
     for (int i = 0; i < count; i++) {
         Move *move = moves + i;
-        do_move(board, move, &undo);
-        scores[i] = evaluate(board);
+        scores[i] = -score_move(board, move);
         indexes[i] = i;
-        undo_move(board, move, &undo);
     }
     for (int i = 1; i < count; i++) {
         int j = i;
@@ -83,13 +80,13 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
     if (depth <= 0) {
         return quiesce(board, alpha, beta);
     }
-    do_null_move(board);
+    Undo undo;
+    do_null_move(board, &undo);
     int score = -alpha_beta(board, depth - 1 - 2, -beta, -beta + 1);
-    undo_null_move(board);
+    undo_null_move(board, &undo);
     if (score >= beta) {
         return beta;
     }
-    Undo undo;
     Move moves[MAX_MOVES];
     int count = gen_moves(board, moves);
     sort_moves(board, moves, count);
