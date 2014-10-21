@@ -20,10 +20,11 @@ typedef struct {
 } Undo;
 
 void make_move(Board *board, Move *move);
-void do_null_move(Board *board);
-void undo_null_move(Board *board);
+void do_null_move(Board *board, Undo *undo);
+void undo_null_move(Board *board, Undo *undo);
 void do_move(Board *board, Move *move, Undo *undo);
 void undo_move(Board *board, Move *move, Undo *undo);
+int score_move(Board *board, Move *move);
 
 void move_to_string(Move *move, char *str);
 void move_from_string(Move *move, char *str);

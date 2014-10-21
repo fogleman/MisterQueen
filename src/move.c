@@ -16,14 +16,21 @@ void make_move(Board *board, Move *move) {
     do_move(board, move, &undo);
 }
 
-void do_null_move(Board *board) {
+void do_null_move(Board *board, Undo *undo) {
+    TOGGLE_HASH(board);
+    undo->ep = board->ep;
+    board->ep = 0L;
     board->color ^= BLACK;
     board->hash ^= HASH_COLOR;
+    TOGGLE_HASH(board);
 }
 
-void undo_null_move(Board *board) {
+void undo_null_move(Board *board, Undo *undo) {
+    TOGGLE_HASH(board);
+    board->ep = undo->ep;
     board->color ^= BLACK;
     board->hash ^= HASH_COLOR;
+    TOGGLE_HASH(board);
 }
 
 void do_move(Board *board, Move *move, Undo *undo) {
@@ -138,6 +145,144 @@ void undo_move(Board *board, Move *move, Undo *undo) {
     board->color ^= BLACK;
     board->hash ^= HASH_COLOR;
     TOGGLE_HASH(board);
+}
+
+int score_move(Board *board, Move *move) {
+    int result = 0;
+    int src = move->src;
+    int dst = move->dst;
+    int piece = board->squares[src];
+    int capture = board->squares[dst];
+    int piece_material = 0;
+    int capture_material = 0;
+    if (COLOR(piece)) {
+        switch (PIECE(piece)) {
+            case PAWN:
+                piece_material = MATERIAL_PAWN;
+                result -= POSITION_BLACK_PAWN[src];
+                result += POSITION_BLACK_PAWN[dst];
+                break;
+            case KNIGHT:
+                piece_material = MATERIAL_KNIGHT;
+                result -= POSITION_BLACK_KNIGHT[src];
+                result += POSITION_BLACK_KNIGHT[dst];
+                break;
+            case BISHOP:
+                piece_material = MATERIAL_BISHOP;
+                result -= POSITION_BLACK_BISHOP[src];
+                result += POSITION_BLACK_BISHOP[dst];
+                break;
+            case ROOK:
+                piece_material = MATERIAL_ROOK;
+                result -= POSITION_BLACK_ROOK[src];
+                result += POSITION_BLACK_ROOK[dst];
+                break;
+            case QUEEN:
+                piece_material = MATERIAL_QUEEN;
+                result -= POSITION_BLACK_QUEEN[src];
+                result += POSITION_BLACK_QUEEN[dst];
+                break;
+            case KING:
+                piece_material = MATERIAL_KING;
+                result -= POSITION_BLACK_KING[src];
+                result += POSITION_BLACK_KING[dst];
+                break;
+        }
+    }
+    else {
+        switch (PIECE(piece)) {
+            case PAWN:
+                piece_material = MATERIAL_PAWN;
+                result -= POSITION_WHITE_PAWN[src];
+                result += POSITION_WHITE_PAWN[dst];
+                break;
+            case KNIGHT:
+                piece_material = MATERIAL_KNIGHT;
+                result -= POSITION_WHITE_KNIGHT[src];
+                result += POSITION_WHITE_KNIGHT[dst];
+                break;
+            case BISHOP:
+                piece_material = MATERIAL_BISHOP;
+                result -= POSITION_WHITE_BISHOP[src];
+                result += POSITION_WHITE_BISHOP[dst];
+                break;
+            case ROOK:
+                piece_material = MATERIAL_ROOK;
+                result -= POSITION_WHITE_ROOK[src];
+                result += POSITION_WHITE_ROOK[dst];
+                break;
+            case QUEEN:
+                piece_material = MATERIAL_QUEEN;
+                result -= POSITION_WHITE_QUEEN[src];
+                result += POSITION_WHITE_QUEEN[dst];
+                break;
+            case KING:
+                piece_material = MATERIAL_KING;
+                result -= POSITION_WHITE_KING[src];
+                result += POSITION_WHITE_KING[dst];
+                break;
+        }
+    }
+    if (capture) {
+        if (COLOR(capture)) {
+            switch (PIECE(capture)) {
+                case PAWN:
+                    capture_material = MATERIAL_PAWN;
+                    result += POSITION_BLACK_PAWN[dst];
+                    break;
+                case KNIGHT:
+                    capture_material = MATERIAL_KNIGHT;
+                    result += POSITION_BLACK_KNIGHT[dst];
+                    break;
+                case BISHOP:
+                    capture_material = MATERIAL_BISHOP;
+                    result += POSITION_BLACK_BISHOP[dst];
+                    break;
+                case ROOK:
+                    capture_material = MATERIAL_ROOK;
+                    result += POSITION_BLACK_ROOK[dst];
+                    break;
+                case QUEEN:
+                    capture_material = MATERIAL_QUEEN;
+                    result += POSITION_BLACK_QUEEN[dst];
+                    break;
+                case KING:
+                    capture_material = MATERIAL_KING;
+                    result += POSITION_BLACK_KING[dst];
+                    break;
+            }
+        }
+        else {
+            switch (PIECE(capture)) {
+                case PAWN:
+                    capture_material = MATERIAL_PAWN;
+                    result += POSITION_WHITE_PAWN[dst];
+                    break;
+                case KNIGHT:
+                    capture_material = MATERIAL_KNIGHT;
+                    result += POSITION_WHITE_KNIGHT[dst];
+                    break;
+                case BISHOP:
+                    capture_material = MATERIAL_BISHOP;
+                    result += POSITION_WHITE_BISHOP[dst];
+                    break;
+                case ROOK:
+                    capture_material = MATERIAL_ROOK;
+                    result += POSITION_WHITE_ROOK[dst];
+                    break;
+                case QUEEN:
+                    capture_material = MATERIAL_QUEEN;
+                    result += POSITION_WHITE_QUEEN[dst];
+                    break;
+                case KING:
+                    capture_material = MATERIAL_KING;
+                    result += POSITION_WHITE_KING[dst];
+                    break;
+            }
+        }
+        result += capture_material;
+    }
+    return result;
 }
 
 void move_to_string(Move *move, char *str) {
