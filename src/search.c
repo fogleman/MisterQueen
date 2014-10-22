@@ -7,15 +7,13 @@
 #include "table.h"
 #include "util.h"
 
+#define XOR_SWAP(a, b) a = a ^ b; b = a ^ b; a = a ^ b;
+
 static volatile int stop_flag;
 
 static Table TABLE;
-static int nodes;
-
-#define XOR_SWAP(a, b) a = a ^ b; b = a ^ b; a = a ^ b;
-
-// TODO: don't use a global here
 static int root_depth;
+static int nodes;
 
 void sort_moves(Board *board, Move *moves, int count) {
     Move *best = table_get_move(&TABLE, board->hash);
