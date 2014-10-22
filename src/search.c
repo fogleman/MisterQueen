@@ -23,15 +23,15 @@ void sort_moves(Board *board, Move *moves, int count) {
     int indexes[MAX_MOVES];
     for (int i = 0; i < count; i++) {
         Move *move = moves + i;
-        scores[i] = -score_move(board, move);
+        scores[i] = score_move(board, move);
         if (best && memcmp(best, move, sizeof(Move)) == 0) {
-            scores[i] -= INF;
+            scores[i] += INF;
         }
         indexes[i] = i;
     }
     for (int i = 1; i < count; i++) {
         int j = i;
-        while (j > 0 && scores[j - 1] > scores[j]) {
+        while (j > 0 && scores[j - 1] < scores[j]) {
             XOR_SWAP(scores[j - 1], scores[j]);
             XOR_SWAP(indexes[j - 1], indexes[j]);
             j--;
@@ -163,11 +163,12 @@ void print_pv(Board *board, int depth) {
     undo_move(board, &entry->move, &undo);
 }
 
-int search(Board *board, double duration, Move *move) {
+int search(Board *board, SearchParameters *parameters, Move *move) {
     stop_flag = 0;
     int result = 1;
     table_alloc(&TABLE, 20);
     double start = now();
+    double duration = parameters->duration;
     for (int depth = 1; depth < 100; depth++) {
         root_depth = depth;
         nodes = 0;

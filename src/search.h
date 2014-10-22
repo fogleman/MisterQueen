@@ -7,7 +7,11 @@
 #define INF 1000000
 #define MATE 100000
 
-int search(Board *board, double duration, Move *move);
+typedef struct {
+    double duration;
+} SearchParameters;
+
+int search(Board *board, SearchParameters *parameters, Move *move);
 void stop_search();
 
 #endif

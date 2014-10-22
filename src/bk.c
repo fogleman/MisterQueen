@@ -9,7 +9,9 @@ void bk_test(char *fen, char *bm) {
     board_print(&board);
     printf("%s\n", bm);
     Move move;
-    search(&board, 20, &move);
+    SearchParameters parameters;
+    parameters.duration = 20;
+    search(&board, &parameters, &move);
     print_move(&board, &move);
     printf("\n\n");
 }

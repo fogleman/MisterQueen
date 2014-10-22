@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "board.h"
 #include "move.h"
@@ -41,13 +42,27 @@ void handle_startpos_moves(char *moves) {
 }
 
 int thread_func(void *arg) {
+    SearchParameters *parameters = arg;
     Move move;
-    search(&board, 0, &move);
+    search(&board, parameters, &move);
+    free(parameters);
     return 0;
 }
 
+void thread_start(SearchParameters *parameters) {
+    thrd_create(&thrd, thread_func, parameters);
+}
+
 void handle_go() {
-    thrd_create(&thrd, thread_func, NULL);
+    SearchParameters *parameters = malloc(sizeof(SearchParameters));
+    parameters->duration = 3;
+    thread_start(parameters);
+}
+
+void handle_go_infinite() {
+    SearchParameters *parameters = malloc(sizeof(SearchParameters));
+    parameters->duration = 0;
+    thread_start(parameters);
 }
 
 void handle_stop() {
@@ -78,7 +93,17 @@ int parse_line() {
         handle_fen(arg);
     }
     if (starts_with(line, "go")) {
-        handle_go();
+        if (strstr(line, "ponder")) {
+            // no pondering yet
+        }
+        else {
+            if (strstr(line, "infinite")) {
+                handle_go_infinite();
+            }
+            else {
+                handle_go();
+            }
+        }
     }
     if (strcmp(line, "stop") == 0) {
         handle_stop();
