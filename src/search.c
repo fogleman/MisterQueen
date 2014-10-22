@@ -10,6 +10,7 @@
 static volatile int stop_flag;
 
 static Table TABLE;
+static int nodes;
 
 #define XOR_SWAP(a, b) a = a ^ b; b = a ^ b; a = a ^ b;
 
@@ -78,6 +79,7 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
     if (depth <= 0) {
         return quiesce(board, alpha, beta);
     }
+    nodes++;
     Undo undo;
     do_null_move(board, &undo);
     int score = -alpha_beta(board, depth - 1 - 2, -beta, -beta + 1);
@@ -168,6 +170,7 @@ int search(Board *board, double duration, Move *move) {
     double start = now();
     for (int depth = 1; depth < 100; depth++) {
         root_depth = depth;
+        nodes = 0;
         int score = root_search(board, depth, -INF, INF, move);
         if (stop_flag) {
             break;
@@ -180,8 +183,8 @@ int search(Board *board, double duration, Move *move) {
         char move_string[16];
         move_to_string(move, move_string);
         int millis = elapsed * 1000;
-        printf("info depth %d score cp %d nodes 0 time %d pv",
-            depth, score, millis);
+        printf("info depth %d score cp %d nodes %d time %d pv",
+            depth, score, nodes, millis);
         print_pv(board, depth);
         printf("\n");
         if (duration > 0 && elapsed > duration) {
