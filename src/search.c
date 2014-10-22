@@ -141,8 +141,10 @@ int root_search(Board *board, int depth, int alpha, int beta, Move *result) {
             best = move;
         }
     }
-    memcpy(result, best, sizeof(Move));
-    table_set_move(&TABLE, board->hash, depth, best);
+    if (best) {
+        memcpy(result, best, sizeof(Move));
+        table_set_move(&TABLE, board->hash, depth, best);
+    }
     return alpha;
 }
 
@@ -169,10 +171,29 @@ int search(Board *board, SearchParameters *parameters, Move *move) {
     table_alloc(&TABLE, 20);
     double start = now();
     double duration = parameters->duration;
+    int score = 0;
     for (int depth = 1; depth < 100; depth++) {
         root_depth = depth;
         nodes = 0;
-        int score = root_search(board, depth, -INF, INF, move);
+        int lo = 25;
+        int hi = 25;
+        while (1) {
+            int alpha = score - lo;
+            int beta = score + hi;
+            score = root_search(board, depth, alpha, beta, move);
+            if (stop_flag) {
+                break;
+            }
+            if (score == alpha) {
+                lo *= 4;
+            }
+            else if (score == beta) {
+                hi *= 4;
+            }
+            else {
+                break;
+            }
+        }
         if (stop_flag) {
             break;
         }
