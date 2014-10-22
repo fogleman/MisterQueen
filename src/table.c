@@ -12,16 +12,19 @@ void table_free(Table *table) {
     free(table->data);
 }
 
-Entry *table_get(Table *table, bb key) {
-    return table->data + (key & table->mask);
+Move *table_get_move(Table *table, bb key) {
+    Entry *entry = TABLE_ENTRY(table, key);
+    if (entry->key == key) {
+        return &entry->move;
+    }
+    return NULL;
 }
 
-void table_set(Table *table, bb key, int depth, int value, Move *move) {
-    Entry *entry = table_get(table, key);
-    entry->key = key;
-    entry->depth = depth;
-    entry->value = value;
-    if (move) {
+void table_set_move(Table *table, bb key, int depth, Move *move) {
+    Entry *entry = TABLE_ENTRY(table, key);
+    if (entry->depth <= depth) {
+        entry->key = key;
+        entry->depth = depth;
         memcpy(&entry->move, move, sizeof(Move));
     }
 }

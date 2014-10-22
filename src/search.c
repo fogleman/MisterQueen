@@ -17,11 +17,15 @@ static Table TABLE;
 static int root_depth;
 
 void sort_moves(Board *board, Move *moves, int count) {
+    Move *best = table_get_move(&TABLE, board->hash);
     int scores[MAX_MOVES];
     int indexes[MAX_MOVES];
     for (int i = 0; i < count; i++) {
         Move *move = moves + i;
         scores[i] = -score_move(board, move);
+        if (best && memcmp(best, move, sizeof(Move)) == 0) {
+            scores[i] -= INF;
+        }
         indexes[i] = i;
     }
     for (int i = 1; i < count; i++) {
@@ -49,15 +53,11 @@ int quiesce(Board *board, int alpha, int beta) {
     }
     Undo undo;
     Move moves[MAX_MOVES];
+    // TODO: only good attacks
     int count = gen_attacks(board, moves);
     sort_moves(board, moves, count);
     for (int i = 0; i < count; i++) {
         Move *move = &moves[i];
-        // int p1 = PIECE(board->squares[move->src]);
-        // int p2 = PIECE(board->squares[move->dst]);
-        // if (p2 < p1) {
-        //     continue;
-        // }
         do_move(board, move, &undo);
         int score = -quiesce(board, -beta, -alpha);
         undo_move(board, move, &undo);
@@ -75,10 +75,6 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
     if (is_illegal(board)) {
         return INF;
     }
-    // Entry *entry = table_get(&TABLE, board->hash);
-    // if (entry->key == board->hash && entry->depth == depth) {
-    //     return entry->value;
-    // }
     if (depth <= 0) {
         return quiesce(board, alpha, beta);
     }
@@ -93,7 +89,6 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
     int count = gen_moves(board, moves);
     sort_moves(board, moves, count);
     int can_move = 0;
-    Move *best = NULL;
     for (int i = 0; i < count; i++) {
         Move *move = &moves[i];
         do_move(board, move, &undo);
@@ -106,11 +101,12 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
             can_move = 1;
         }
         if (score >= beta) {
+            table_set_move(&TABLE, board->hash, depth, move);
             return beta;
         }
         if (score > alpha) {
             alpha = score;
-            best = move;
+            table_set_move(&TABLE, board->hash, depth, move);
         }
     }
     if (!can_move) {
@@ -121,7 +117,6 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
             return 0;
         }
     }
-    table_set(&TABLE, board->hash, depth, alpha, best);
     return alpha;
 }
 
@@ -139,16 +134,13 @@ int root_search(Board *board, int depth, int alpha, int beta, Move *result) {
         if (stop_flag) {
             return 0;
         }
-        if (score >= beta) {
-            return beta;
-        }
         if (score > alpha) {
             alpha = score;
             best = move;
         }
     }
     memcpy(result, best, sizeof(Move));
-    table_set(&TABLE, board->hash, depth, alpha, best);
+    table_set_move(&TABLE, board->hash, depth, best);
     return alpha;
 }
 
@@ -156,7 +148,7 @@ void print_pv(Board *board, int depth) {
     if (depth <= 0) {
         return;
     }
-    Entry *entry = table_get(&TABLE, board->hash);
+    Entry *entry = TABLE_ENTRY(&TABLE, board->hash);
     if (entry->key != board->hash) {
         return;
     }
@@ -172,7 +164,7 @@ void print_pv(Board *board, int depth) {
 int search(Board *board, double duration, Move *move) {
     stop_flag = 0;
     int result = 1;
-    table_alloc(&TABLE, 22);
+    table_alloc(&TABLE, 20);
     double start = now();
     for (int depth = 1; depth < 100; depth++) {
         root_depth = depth;

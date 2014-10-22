@@ -4,10 +4,11 @@
 #include "bb.h"
 #include "move.h"
 
+#define TABLE_ENTRY(table, key) ((table)->data + ((key) & (table)->mask))
+
 typedef struct {
     bb key;
-    int depth;
-    int value;
+    unsigned char depth;
     Move move;
 } Entry;
 
@@ -19,7 +20,8 @@ typedef struct {
 
 void table_alloc(Table *table, int bits);
 void table_free(Table *table);
-Entry *table_get(Table *table, bb key);
-void table_set(Table *table, bb key, int depth, int value, Move *move);
+Entry *table_entry(Table *table, bb key);
+Move *table_get_move(Table *table, bb key);
+void table_set_move(Table *table, bb key, int depth, Move *move);
 
 #endif
