@@ -75,7 +75,6 @@ int parse_line() {
     if (fgets(data, 1024, stdin) == NULL) {
         return 0;
     }
-    char arg[1024];
     char *line = strip(data);
     if (strcmp(line, "uci") == 0) {
         handle_uci();
@@ -86,11 +85,11 @@ int parse_line() {
     if (strcmp(line, "position startpos") == 0) {
         handle_startpos();
     }
-    if (sscanf(line, "position startpos moves %[^]", arg) == 1) {
-        handle_startpos_moves(arg);
+    if (starts_with(line, "position startpos moves ")) {
+        handle_startpos_moves(line + 24);
     }
-    if (sscanf(line, "position fen %[^]", arg) == 1) {
-        handle_fen(arg);
+    if (starts_with(line, "position fen ")) {
+        handle_fen(line + 13);
     }
     if (starts_with(line, "go")) {
         if (strstr(line, "ponder")) {
