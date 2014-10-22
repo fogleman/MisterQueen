@@ -91,5 +91,6 @@ int parse_line() {
 
 void uci_main() {
     setbuf(stdout, NULL);
+    board_reset(&board);
     while (parse_line());
 }
