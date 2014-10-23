@@ -55,7 +55,7 @@ void thread_start(SearchParameters *parameters) {
 
 void handle_go() {
     SearchParameters *parameters = malloc(sizeof(SearchParameters));
-    parameters->duration = 3;
+    parameters->duration = 30;
     thread_start(parameters);
 }
 

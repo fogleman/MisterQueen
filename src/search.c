@@ -74,8 +74,14 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
     if (is_illegal(board)) {
         return INF;
     }
+    int value;
+    if (table_get(&TABLE, board->hash, depth, alpha, beta, &value)) {
+        return value;
+    }
     if (depth <= 0) {
-        return quiesce(board, alpha, beta);
+        int value = quiesce(board, alpha, beta);
+        table_set(&TABLE, board->hash, depth, value, TABLE_EXACT);
+        return value;
     }
     nodes++;
     Undo undo;
@@ -83,12 +89,14 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
     int score = -alpha_beta(board, depth - 1 - 2, -beta, -beta + 1);
     undo_null_move(board, &undo);
     if (score >= beta) {
+        table_set(&TABLE, board->hash, depth, beta, TABLE_BETA);
         return beta;
     }
     Move moves[MAX_MOVES];
     int count = gen_moves(board, moves);
     sort_moves(board, moves, count);
     int can_move = 0;
+    int flag = TABLE_ALPHA;
     for (int i = 0; i < count; i++) {
         Move *move = &moves[i];
         do_move(board, move, &undo);
@@ -101,11 +109,13 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
             can_move = 1;
         }
         if (score >= beta) {
+            table_set(&TABLE, board->hash, depth, beta, TABLE_BETA);
             table_set_move(&TABLE, board->hash, depth, move);
             return beta;
         }
         if (score > alpha) {
             alpha = score;
+            flag = TABLE_EXACT;
             table_set_move(&TABLE, board->hash, depth, move);
         }
     }
@@ -117,6 +127,7 @@ int alpha_beta(Board *board, int depth, int alpha, int beta) {
             return 0;
         }
     }
+    table_set(&TABLE, board->hash, depth, alpha, flag);
     return alpha;
 }
 
@@ -173,8 +184,8 @@ int search(Board *board, SearchParameters *parameters, Move *move) {
     for (int depth = 1; depth < 100; depth++) {
         root_depth = depth;
         nodes = 0;
-        int lo = 25;
-        int hi = 25;
+        int lo = 5;
+        int hi = 5;
         while (1) {
             int alpha = score - lo;
             int beta = score + hi;
@@ -183,10 +194,10 @@ int search(Board *board, SearchParameters *parameters, Move *move) {
                 break;
             }
             if (score == alpha) {
-                lo *= 4;
+                lo *= 5;
             }
             else if (score == beta) {
-                hi *= 4;
+                hi *= 5;
             }
             else {
                 break;
