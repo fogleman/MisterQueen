@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "bb.h"
+#include "util.h"
 
 bb BB_KNIGHT[64];
 bb BB_KING[64];
@@ -303,9 +304,9 @@ void bb_print(bb value) {
 }
 
 bb bb_random() {
-    bb a = rand() % 0x10000;
-    bb b = rand() % 0x10000;
-    bb c = rand() % 0x10000;
-    bb d = rand() % 0x10000;
+    bb a = get_random() % 0x10000;
+    bb b = get_random() % 0x10000;
+    bb c = get_random() % 0x10000;
+    bb d = get_random() % 0x10000;
     return a << 48 | b << 32 | c << 16 | d;
 }

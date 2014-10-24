@@ -2,6 +2,15 @@
 #include <string.h>
 #include <time.h>
 
+static unsigned int m_w = 0x8eeee9fb; // must not be zero, nor 0x464fffff
+static unsigned int m_z = 0x433072e9; // must not be zero, nor 0x9068ffff
+
+unsigned int get_random() {
+    m_z = 36969 * (m_z & 65535) + (m_z >> 16);
+    m_w = 18000 * (m_w & 65535) + (m_w >> 16);
+    return (m_z << 16) + m_w;
+}
+
 char *tokenize(char *str, const char *delim, char **key) {
     char *result;
     if (str == NULL) {
