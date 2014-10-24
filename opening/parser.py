@@ -1,4 +1,14 @@
 import fileinput
+import random
+
+def weighted_choice(items): # [(key, count)]
+    total = sum(x[1] for x in items)
+    index = random.randint(0, total - 1)
+    offset = 0
+    for key, count in items:
+        offset += count
+        if index < offset:
+            return key
 
 class Node(object):
     def __init__(self):
@@ -54,6 +64,22 @@ class Node(object):
             move = raw_input('BLACK > ')
         if move in self.children:
             self.children[move].visit(not wtm)
+    def random(self):
+        items = self.children.items()
+        total = sum(x[1].total for x in items)
+        if total < 100:
+            return
+        pcts = []
+        for key, value in items:
+            pct = int(round(100.0 * value.total / total))
+            if pct >= 10:
+                pcts.append((key, pct))
+        if not pcts:
+            return
+        move = weighted_choice(pcts)
+        print move,
+        if move in self.children:
+            self.children[move].random()
 
 def main():
     root = Node()
@@ -71,7 +97,9 @@ def main():
             node.add_result(result)
         print root.total
     while True:
-        root.visit(True)
+        # root.visit(True)
+        root.random()
+        print
 
 if __name__ == '__main__':
     main()
