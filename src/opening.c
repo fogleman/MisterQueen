@@ -74,12 +74,40 @@ void node_print(Node *node) {
             int black = 100 * child->black / child->total;
             int pct = 100 * child->total / total;
             int total = child->total;
-            if (pct < 10 || total < 1000) {
-                continue;
-            }
             printf("%8s [%3d%% %3d%% %3d%%] %3d%% %d\n",
                 child->move, white, draw, black, pct, total);
         }
+    }
+}
+
+void node_visit(Node *node, Board *board, int depth) {
+    int total = 0;
+    for (int i = 0; i < MAX_CHILDREN; i++) {
+        Node *child = node->children[i];
+        if (child) {
+            total += child->total;
+        }
+    }
+    for (int i = 0; i < MAX_CHILDREN; i++) {
+        Node *child = node->children[i];
+        if (!child) {
+            continue;
+        }
+        if (child->total < 100) {
+            continue;
+        }
+        Move move;
+        Undo undo;
+        if (!parse_move(board, child->move, &move)) {
+            continue;
+        }
+        int pct = 100 * child->total / total;
+        if (pct >= 10) {
+            printf("%02d 0x%016llx %03d %s\n", depth, board->hash, pct, child->move);
+        }
+        do_move(board, &move, &undo);
+        node_visit(child, board, depth + 1);
+        undo_move(board, &move, &undo);
     }
 }
 
@@ -98,13 +126,12 @@ void handle_line(Node *root, char *line) {
     while (token) {
         node = node_move(node, token);
         if (!node) {
-            printf("%s\n", token);
             break;
         }
         node_result(node, result);
         token = tokenize(NULL, " ", &key);
         depth++;
-        if (depth == 2) {
+        if (depth == 30) {
             break;
         }
     }
@@ -120,12 +147,11 @@ int opening_main(int argc, char **argv) {
     FILE *file = fopen(argv[1], "r");
     while (fgets(line, sizeof(line), file)) {
         handle_line(root, line);
-        if (root->total % 100000 == 0) {
-            printf("%d\n", root->total);
-        }
     }
-    node_print(root);
+    Board board;
+    board_reset(&board);
+    node_visit(root, &board, 0);
     fclose(file);
-    node_free(root);
+    // node_free(root);
     return 0;
 }
