@@ -88,12 +88,12 @@ void node_visit(Node *node, Board *board, int depth) {
             total += child->total;
         }
     }
+    if (total < 1000) {
+        return;
+    }
     for (int i = 0; i < MAX_CHILDREN; i++) {
         Node *child = node->children[i];
         if (!child) {
-            continue;
-        }
-        if (child->total < 100) {
             continue;
         }
         Move move;
@@ -101,10 +101,8 @@ void node_visit(Node *node, Board *board, int depth) {
         if (!parse_move(board, child->move, &move)) {
             continue;
         }
-        int pct = 100 * child->total / total;
-        if (pct >= 10) {
-            printf("%02d 0x%016llx %03d %s\n", depth, board->hash, pct, child->move);
-        }
+        printf("(0x%016llx, %2d, %2d, %d),\n",
+            board->hash, move.src, move.dst, child->total);
         do_move(board, &move, &undo);
         node_visit(child, board, depth + 1);
         undo_move(board, &move, &undo);

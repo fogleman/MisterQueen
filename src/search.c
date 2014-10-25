@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "search.h"
+#include "book.h"
 #include "eval.h"
 #include "gen.h"
 #include "move.h"
@@ -175,6 +176,12 @@ void print_pv(Board *board, int depth) {
 }
 
 int search(Board *board, SearchParameters *parameters, Move *move) {
+    if (book_move(board, move)) {
+        char move_string[16];
+        move_to_string(move, move_string);
+        printf("bestmove %s\n", move_string);
+        return 1;
+    }
     stop_flag = 0;
     int result = 1;
     table_alloc(&TABLE, 20);
