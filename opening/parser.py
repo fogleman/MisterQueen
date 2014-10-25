@@ -67,12 +67,12 @@ class Node(object):
     def random(self):
         items = self.children.items()
         total = sum(x[1].total for x in items)
-        if total < 100:
+        if total < 10000:
             return
         pcts = []
         for key, value in items:
             pct = int(round(100.0 * value.total / total))
-            if pct >= 10:
+            if pct >= 20:
                 pcts.append((key, pct))
         if not pcts:
             return
@@ -82,6 +82,11 @@ class Node(object):
             self.children[move].random()
 
 def main():
+    results = {
+        '1-0': 'W',
+        '0-1': 'B',
+        '1/2-1/2': 'D'
+    }
     root = Node()
     for line in fileinput.input():
         line = line.strip()
@@ -90,16 +95,18 @@ def main():
         result = line[line.index('}')+1:].strip()
         moves = line[:line.index('{')].strip().split()
         del moves[::3]
+        print results[result], ' '.join(moves)
+        continue
         node = root
         node.add_result(result)
-        for move in moves[:20]:
+        for move in moves[:10]:
             node = node.do_move(move)
             node.add_result(result)
-        print root.total
-    while True:
-        # root.visit(True)
-        root.random()
-        print
+        print root.total, root.white, root.draw, root.black
+    # while True:
+    #     root.visit(True)
+        # root.random()
+        # print
 
 if __name__ == '__main__':
     main()
