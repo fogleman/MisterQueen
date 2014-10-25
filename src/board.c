@@ -275,7 +275,7 @@ void board_load_fen(Board *board, char *fen) {
     i++;
     switch (fen[i++]) {
         case 'w': board->color = WHITE; break;
-        case 'b': board->color = BLACK; break;
+        case 'b': board->color = BLACK; board->hash ^= HASH_COLOR; break;
         default: return;
     }
     i++;
@@ -293,6 +293,22 @@ void board_load_fen(Board *board, char *fen) {
         }
         if (done) {
             break;
+        }
+    }
+    board->hash ^= HASH_CASTLE[CASTLE_ALL];
+    board->hash ^= HASH_CASTLE[board->castle];
+    i++;
+    if (fen[i] == '-') {
+        i++;
+    }
+    else if (fen[i] >= 'a' && fen[i] <= 'h') {
+        int ep_file = fen[i] - 'a';
+        i++;
+        if (fen[i] >= '1' && fen[i] <= '8') {
+            int ep_rank = fen[i] - '1';
+            board->ep = BIT(RF(ep_rank, ep_file));
+            board->hash ^= HASH_EP[LSB(board->ep) % 8];
+            i++;
         }
     }
     i++;
