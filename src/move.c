@@ -305,7 +305,7 @@ void move_to_string(Move *move, char *str) {
     *str++ = 0;
 }
 
-void move_from_string(Move *move, char *str) {
+void move_from_string(Move *move, const char *str) {
     int file1 = str[0] - 'a';
     int rank1 = str[1] - '1';
     int file2 = str[2] - 'a';
@@ -336,81 +336,108 @@ void notate_move(Board *board, Move *move, Move *moves, int count, char *result)
     char file2 = 'a' + move->dst % 8;
     int show_rank1 = 0;
     int show_file1 = 0;
-    if (capture && PIECE(piece) == PAWN) {
-        show_file1 = 1;
-    }
-    // castle
-    if (PIECE(piece) == KING) {
-        if (move->src == 4 && move->dst == 6) {
-            strcpy(result, "O-O");
-            return;
+    if (PIECE(piece) == PAWN) {
+        if (file1 != file2) {
+            capture = 1;
         }
-        if (move->src == 4 && move->dst == 2) {
-            strcpy(result, "O-O-O");
-            return;
-        }
-        if (move->src == 60 && move->dst == 62) {
-            strcpy(result, "O-O");
-            return;
-        }
-        if (move->src == 60 && move->dst == 58) {
-            strcpy(result, "O-O-O");
-            return;
+        if (capture) {
+            show_file1 = 1;
         }
     }
     // ambiguity
+    int ambiguous = 0;
+    int unique_rank = 1;
+    int unique_file = 1;
     for (int i = 0; i < count; i++) {
         Move *other = moves + i;
-        if (memcmp(move, other, sizeof(Move)) == 0) {
-            continue; // same move
-        }
         if (move->dst != other->dst) {
             continue; // different target
+        }
+        if (move->src == other->src) {
+            continue; // same move
         }
         if (piece != board->squares[other->src]) {
             continue; // different piece
         }
-        if (move->src % 8 != other->src % 8) {
+        ambiguous = 1;
+        if (move->src % 8 == other->src % 8) {
+            unique_file = 0;
+        }
+        if (move->src / 8 == other->src / 8) {
+            unique_rank = 0;
+        }
+    }
+    if (ambiguous) {
+        if (unique_rank && unique_file) {
             show_file1 = 1;
         }
-        else if (move->src / 8 != other->src / 8) {
+        else if (unique_rank) {
             show_rank1 = 1;
+        }
+        else if (unique_file) {
+            show_file1 = 1;
         }
         else {
-            show_file1 = 1;
             show_rank1 = 1;
+            show_file1 = 1;
         }
     }
-    // piece
-    switch (PIECE(piece)) {
-        case KNIGHT: *result++ = 'N'; break;
-        case BISHOP: *result++ = 'B'; break;
-        case ROOK:   *result++ = 'R'; break;
-        case QUEEN:  *result++ = 'Q'; break;
-        case KING:   *result++ = 'K'; break;
+    // castle
+    int castle = 0;
+    if (PIECE(piece) == KING) {
+        castle = 1;
+        if (move->src == 4 && move->dst == 6) {
+            strcpy(result, "O-O");
+            result += 3;
+        }
+        else if (move->src == 4 && move->dst == 2) {
+            strcpy(result, "O-O-O");
+            result += 5;
+        }
+        else if (move->src == 60 && move->dst == 62) {
+            strcpy(result, "O-O");
+            result += 3;
+        }
+        else if (move->src == 60 && move->dst == 58) {
+            strcpy(result, "O-O-O");
+            result += 5;
+        }
+        else {
+            castle = 0;
+        }
     }
-    // source
-    if (show_file1) {
-        *result++ = file1;
-    }
-    if (show_rank1) {
-        *result++ = rank1;
-    }
-    // capture
-    if (capture) {
-        *result++ = 'x';
-    }
-    // target
-    *result++ = file2;
-    *result++ = rank2;
-    // promotion
-    if (move->promotion) {
-        *result++ = '=';
-        switch (PIECE(move->promotion)) {
+    if (!castle) {
+        // piece
+        switch (PIECE(piece)) {
             case KNIGHT: *result++ = 'N'; break;
             case BISHOP: *result++ = 'B'; break;
             case ROOK:   *result++ = 'R'; break;
             case QUEEN:  *result++ = 'Q'; break;
+            case KING:   *result++ = 'K'; break;
+        }
+        // source
+        if (show_file1) {
+            *result++ = file1;
+        }
+        if (show_rank1) {
+            *result++ = rank1;
+        }
+        // capture
+        if (capture) {
+            *result++ = 'x';
+        }
+        // target
+        *result++ = file2;
+        *result++ = rank2;
+        // promotion
+        if (move->promotion) {
+            *result++ = '=';
+            switch (PIECE(move->promotion)) {
+                case KNIGHT: *result++ = 'N'; break;
+                case BISHOP: *result++ = 'B'; break;
+                case ROOK:   *result++ = 'R'; break;
+                case QUEEN:  *result++ = 'Q'; break;
+            }
         }
     }
     // check
@@ -437,7 +464,7 @@ void print_move(Board *board, Move *move) {
     printf("%s", notation);
 }
 
-int parse_move(Board *board, char *notation, Move *move) {
+int parse_move(Board *board, const char *notation, Move *move) {
     char temp[16];
     Move moves[MAX_MOVES];
     int count = gen_legal_moves(board, moves);
@@ -451,25 +478,22 @@ int parse_move(Board *board, char *notation, Move *move) {
     return 0;
 }
 
-void parse_pgn(Board *board, char *pgn) {
+int parse_pgn(Board *board, const char *pgn) {
     board_reset(board);
     char *temp = calloc(strlen(pgn) + 1, sizeof(char));
     strcpy(temp, pgn);
     char *key;
     char *token = tokenize(temp, " ", &key);
     while (token) {
-        printf("%s\n", token);
         Move move;
         if (parse_move(board, token, &move)) {
             make_move(board, &move);
         }
         else {
-            printf("MOVE NOT FOUND: ");
-            print_move(board, &move);
-            break;
+            return 0;
         }
-        board_print(board);
         token = tokenize(NULL, " ", &key);
     }
     free(temp);
+    return 1;
 }

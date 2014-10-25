@@ -27,10 +27,10 @@ void undo_move(Board *board, Move *move, Undo *undo);
 int score_move(Board *board, Move *move);
 
 void move_to_string(Move *move, char *str);
-void move_from_string(Move *move, char *str);
+void move_from_string(Move *move, const char *str);
 void notate_move(Board *board, Move *move, Move *moves, int count, char *result);
 void print_move(Board *board, Move *move);
-int parse_move(Board *board, char *notation, Move *move);
-void parse_pgn(Board *board, char *pgn);
+int parse_move(Board *board, const char *notation, Move *move);
+int parse_pgn(Board *board, const char *pgn);
 
 #endif
