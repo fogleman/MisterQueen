@@ -33,7 +33,7 @@ int book_move(Board *board, Move *result) {
         total += entry->count;
     }
     // weighted random choice
-    int index = get_random() % total;
+    int index = prng() % total;
     int offset = 0;
     for (int i = p; i < q; i++) {
         const BookEntry *entry = &book[i];

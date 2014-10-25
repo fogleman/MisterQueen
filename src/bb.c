@@ -304,9 +304,9 @@ void bb_print(bb value) {
 }
 
 bb bb_random() {
-    bb a = get_random() % 0x10000;
-    bb b = get_random() % 0x10000;
-    bb c = get_random() % 0x10000;
-    bb d = get_random() % 0x10000;
+    bb a = prng() % 0x10000;
+    bb b = prng() % 0x10000;
+    bb c = prng() % 0x10000;
+    bb d = prng() % 0x10000;
     return a << 48 | b << 32 | c << 16 | d;
 }
