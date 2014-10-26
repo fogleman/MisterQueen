@@ -41,7 +41,7 @@ void do_move(Board *board, Move *move, Undo *undo) {
     undo->ep = board->ep;
     board_set(board, move->src, EMPTY);
     if (move->promotion) {
-        board_set(board, move->dst, move->promotion);
+        board_set(board, move->dst, move->promotion | board->color);
     }
     else {
         board_set(board, move->dst, undo->piece);
@@ -295,7 +295,7 @@ void move_to_string(Move *move, char *str) {
     *str++ = file2;
     *str++ = rank2;
     if (move->promotion) {
-        switch (PIECE(move->promotion)) {
+        switch (move->promotion) {
             case KNIGHT: *str++ = 'n'; break;
             case BISHOP: *str++ = 'b'; break;
             case ROOK:   *str++ = 'r'; break;
@@ -318,9 +318,6 @@ void move_from_string(Move *move, const char *str) {
         case 'b': promotion = BISHOP; break;
         case 'r': promotion = ROOK; break;
         case 'q': promotion = QUEEN; break;
-    }
-    if (promotion != EMPTY && rank2 == 0) {
-        promotion |= BLACK;
     }
     move->src = src;
     move->dst = dst;
@@ -432,7 +429,7 @@ void notate_move(Board *board, Move *move, Move *moves, int count, char *result)
         // promotion
         if (move->promotion) {
             *result++ = '=';
-            switch (PIECE(move->promotion)) {
+            switch (move->promotion) {
                 case KNIGHT: *result++ = 'N'; break;
                 case BISHOP: *result++ = 'B'; break;
                 case ROOK:   *result++ = 'R'; break;

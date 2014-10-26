@@ -3,6 +3,7 @@
 #include <string.h>
 #include "board.h"
 #include "move.h"
+#include "perft.h"
 #include "search.h"
 #include "tinycthread.h"
 #include "uci.h"
@@ -110,6 +111,9 @@ int parse_line() {
     }
     if (strcmp(line, "quit") == 0) {
         return 0;
+    }
+    if (strcmp(line, "perft") == 0) {
+        perft_tests();
     }
     return 1;
 }

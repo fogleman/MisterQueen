@@ -13,11 +13,11 @@
     (m)->promotion = (p); \
     (m)++;
 
-#define EMIT_PROMOTIONS(m, a, b, c) \
-    EMIT_PROMOTION(m, a, b, c | QUEEN) \
-    EMIT_PROMOTION(m, a, b, c | ROOK) \
-    EMIT_PROMOTION(m, a, b, c | BISHOP) \
-    EMIT_PROMOTION(m, a, b, c | KNIGHT)
+#define EMIT_PROMOTIONS(m, a, b) \
+    EMIT_PROMOTION(m, a, b, QUEEN) \
+    EMIT_PROMOTION(m, a, b, ROOK) \
+    EMIT_PROMOTION(m, a, b, BISHOP) \
+    EMIT_PROMOTION(m, a, b, KNIGHT)
 
 // generic move generators
 int gen_knight_moves(Move *moves, bb srcs, bb mask) {
@@ -104,7 +104,7 @@ int gen_white_pawn_moves(Board *board, Move *moves) {
     while (p1) {
         POP_LSB(sq, p1);
         if (BIT(sq) & promo) {
-            EMIT_PROMOTIONS(moves, sq - 8, sq, WHITE);
+            EMIT_PROMOTIONS(moves, sq - 8, sq);
         }
         else {
             EMIT_MOVE(moves, sq - 8, sq);
@@ -117,7 +117,7 @@ int gen_white_pawn_moves(Board *board, Move *moves) {
     while (a1) {
         POP_LSB(sq, a1);
         if (BIT(sq) & promo) {
-            EMIT_PROMOTIONS(moves, sq - 7, sq, WHITE);
+            EMIT_PROMOTIONS(moves, sq - 7, sq);
         }
         else {
             EMIT_MOVE(moves, sq - 7, sq);
@@ -126,7 +126,7 @@ int gen_white_pawn_moves(Board *board, Move *moves) {
     while (a2) {
         POP_LSB(sq, a2);
         if (BIT(sq) & promo) {
-            EMIT_PROMOTIONS(moves, sq - 9, sq, WHITE);
+            EMIT_PROMOTIONS(moves, sq - 9, sq);
         }
         else {
             EMIT_MOVE(moves, sq - 9, sq);
@@ -271,7 +271,7 @@ int gen_black_pawn_moves(Board *board, Move *moves) {
     while (p1) {
         POP_LSB(sq, p1);
         if (BIT(sq) & promo) {
-            EMIT_PROMOTIONS(moves, sq + 8, sq, BLACK);
+            EMIT_PROMOTIONS(moves, sq + 8, sq);
         }
         else {
             EMIT_MOVE(moves, sq + 8, sq);
@@ -284,7 +284,7 @@ int gen_black_pawn_moves(Board *board, Move *moves) {
     while (a1) {
         POP_LSB(sq, a1);
         if (BIT(sq) & promo) {
-            EMIT_PROMOTIONS(moves, sq + 7, sq, BLACK);
+            EMIT_PROMOTIONS(moves, sq + 7, sq);
         }
         else {
             EMIT_MOVE(moves, sq + 7, sq);
@@ -293,7 +293,7 @@ int gen_black_pawn_moves(Board *board, Move *moves) {
     while (a2) {
         POP_LSB(sq, a2);
         if (BIT(sq) & promo) {
-            EMIT_PROMOTIONS(moves, sq + 9, sq, BLACK);
+            EMIT_PROMOTIONS(moves, sq + 9, sq);
         }
         else {
             EMIT_MOVE(moves, sq + 9, sq);
