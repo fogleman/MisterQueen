@@ -53,15 +53,26 @@ void thread_start(SearchParameters *parameters) {
     thrd_create(&thrd, thread_func, parameters);
 }
 
-void handle_go() {
+void handle_go(char *line) {
     SearchParameters *parameters = malloc(sizeof(SearchParameters));
-    parameters->duration = 30;
-    thread_start(parameters);
-}
-
-void handle_go_infinite() {
-    SearchParameters *parameters = malloc(sizeof(SearchParameters));
-    parameters->duration = 0;
+    parameters->use_book = 1;
+    parameters->duration = 1;
+    char *key;
+    char *token = tokenize(line, " ", &key);
+    while (token) {
+        if (strcmp(token, "infinite") == 0) {
+            parameters->duration = 0;
+            parameters->use_book = 0;
+        }
+        else if (strcmp(token, "movetime") == 0) {
+            char *arg = tokenize(NULL, " ", &key);
+            parameters->duration = atoi(arg) / 1000.0;
+        }
+        else if (strcmp(token, "ponder") == 0) {
+            return; // no pondering yet
+        }
+        token = tokenize(NULL, " ", &key);
+    }
     thread_start(parameters);
 }
 
@@ -92,17 +103,7 @@ int parse_line() {
         handle_fen(line + 13);
     }
     if (starts_with(line, "go")) {
-        if (strstr(line, "ponder")) {
-            // no pondering yet
-        }
-        else {
-            if (strstr(line, "infinite")) {
-                handle_go_infinite();
-            }
-            else {
-                handle_go();
-            }
-        }
+        handle_go(line);
     }
     if (strcmp(line, "stop") == 0) {
         handle_stop();

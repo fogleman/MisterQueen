@@ -9,6 +9,7 @@
 
 typedef struct {
     double duration;
+    int use_book;
 } SearchParameters;
 
 int search(Board *board, SearchParameters *parameters, Move *move);
