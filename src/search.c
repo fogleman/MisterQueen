@@ -44,6 +44,9 @@ void sort_moves(Board *board, Move *moves, int count) {
 }
 
 int quiesce(Board *board, int alpha, int beta) {
+    if (is_illegal(board)) {
+        return INF;
+    }
     int score = evaluate(board);
     if (score >= beta) {
         return beta;
