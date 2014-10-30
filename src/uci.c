@@ -57,7 +57,7 @@ void thread_start(SearchParameters *parameters) {
 void handle_go(char *line) {
     SearchParameters *parameters = malloc(sizeof(SearchParameters));
     parameters->use_book = 1;
-    parameters->duration = 1;
+    parameters->duration = 2;
     char *key;
     char *token = tokenize(line, " ", &key);
     while (token) {

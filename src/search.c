@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "search.h"
 #include "book.h"
 #include "eval.h"
@@ -180,6 +181,7 @@ void print_pv(Board *board, int depth) {
 
 int search(Board *board, SearchParameters *parameters, Move *move) {
     if (parameters->use_book && book_move(board, move)) {
+        sleep(1);
         char move_string[16];
         move_to_string(move, move_string);
         printf("bestmove %s\n", move_string);
@@ -232,7 +234,7 @@ int search(Board *board, SearchParameters *parameters, Move *move) {
             break;
         }
         if (score <= -MATE + depth || score >= MATE - depth) {
-            break;
+            // break;
         }
     }
     char move_string[16];
