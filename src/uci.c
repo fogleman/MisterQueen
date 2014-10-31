@@ -43,14 +43,14 @@ void handle_startpos_moves(char *moves) {
     }
 }
 
-int thread_func(void *arg) {
+static int thread_func(void *arg) {
     Search *search = arg;
     do_search(search, &board);
     free(search);
     return 0;
 }
 
-void thread_start(Search *search) {
+static void thread_start(Search *search) {
     thrd_create(&thrd, thread_func, search);
 }
 

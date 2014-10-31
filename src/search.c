@@ -203,9 +203,9 @@ int do_search(Search *search, Board *board) {
         thread_start(search);
     }
     int score = 0;
+    search->nodes = 0;
     for (int depth = 1; depth < 100; depth++) {
         search->root_depth = depth;
-        search->nodes = 0;
         int lo = 5;
         int hi = 5;
         while (1) {
