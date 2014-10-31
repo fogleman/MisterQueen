@@ -324,7 +324,9 @@ void move_from_string(Move *move, const char *str) {
     move->promotion = promotion;
 }
 
-void notate_move(Board *board, Move *move, Move *moves, int count, char *result) {
+void notate_move(Board *board, Move *move, char *result) {
+    Move moves[MAX_MOVES];
+    int count = gen_legal_moves(board, moves);
     int piece = board->squares[move->src];
     int capture = board->squares[move->dst];
     char rank1 = '1' + move->src / 8;
@@ -455,9 +457,7 @@ void notate_move(Board *board, Move *move, Move *moves, int count, char *result)
 
 void print_move(Board *board, Move *move) {
     char notation[16];
-    Move moves[MAX_MOVES];
-    int count = gen_legal_moves(board, moves);
-    notate_move(board, move, moves, count, notation);
+    notate_move(board, move, notation);
     printf("%s", notation);
 }
 
@@ -466,7 +466,7 @@ int parse_move(Board *board, const char *notation, Move *move) {
     Move moves[MAX_MOVES];
     int count = gen_legal_moves(board, moves);
     for (int i = 0; i < count; i++) {
-        notate_move(board, &moves[i], moves, count, temp);
+        notate_move(board, &moves[i], temp);
         if (strcmp(notation, temp) == 0) {
             memcpy(move, &moves[i], sizeof(Move));
             return 1;

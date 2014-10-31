@@ -233,13 +233,15 @@ int do_search(Search *search, Board *board) {
             break;
         }
         double elapsed = now() - start;
-        char move_string[16];
-        move_to_string(&search->move, move_string);
-        int millis = elapsed * 1000;
-        printf("info depth %d score cp %d nodes %d time %d pv",
-            depth, score, search->nodes, millis);
-        print_pv(search, board, depth);
-        printf("\n");
+        if (search->uci) {
+            char move_string[16];
+            move_to_string(&search->move, move_string);
+            int millis = elapsed * 1000;
+            printf("info depth %d score cp %d nodes %d time %d pv",
+                depth, score, search->nodes, millis);
+            print_pv(search, board, depth);
+            printf("\n");
+        }
         if (duration > 0 && elapsed > duration) {
             break;
         }
@@ -247,9 +249,11 @@ int do_search(Search *search, Board *board) {
             // break;
         }
     }
-    char move_string[16];
-    move_to_string(&search->move, move_string);
-    printf("bestmove %s\n", move_string);
+    if (search->uci) {
+        char move_string[16];
+        move_to_string(&search->move, move_string);
+        printf("bestmove %s\n", move_string);
+    }
     table_free(&search->table);
     return result;
 }

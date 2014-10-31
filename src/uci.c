@@ -56,8 +56,9 @@ static void thread_start(Search *search) {
 
 void handle_go(char *line) {
     Search *search = malloc(sizeof(Search));
+    search->uci = 1;
     search->use_book = 1;
-    search->duration = 2;
+    search->duration = 4;
     char *key;
     char *token = tokenize(line, " ", &key);
     while (token) {

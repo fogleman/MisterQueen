@@ -14,6 +14,7 @@ typedef struct {
     int root_depth;
     int nodes;
     int score;
+    int uci;
     Move move;
     Table table;
     volatile int stop_flag;
