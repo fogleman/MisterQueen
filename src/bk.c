@@ -8,11 +8,10 @@ void bk_test(char *fen, char *bm) {
     board_load_fen(&board, fen);
     board_print(&board);
     printf("%s\n", bm);
-    Move move;
-    SearchParameters parameters;
-    parameters.duration = 20;
-    search(&board, &parameters, &move);
-    print_move(&board, &move);
+    Search search;
+    search.duration = 3;
+    do_search(&search, &board);
+    print_move(&board, &search.move);
     printf("\n\n");
 }
 

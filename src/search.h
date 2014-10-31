@@ -3,6 +3,7 @@
 
 #include "board.h"
 #include "move.h"
+#include "table.h"
 
 #define INF 1000000
 #define MATE 100000
@@ -10,9 +11,15 @@
 typedef struct {
     double duration;
     int use_book;
-} SearchParameters;
+    int root_depth;
+    int nodes;
+    int score;
+    Move move;
+    Table table;
+    volatile int stop_flag;
+} Search;
 
-int search(Board *board, SearchParameters *parameters, Move *move);
+int do_search(Search *search, Board *board);
 void stop_search();
 
 #endif

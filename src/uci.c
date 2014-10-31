@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bk.h"
 #include "board.h"
 #include "move.h"
 #include "perft.h"
@@ -43,38 +44,37 @@ void handle_startpos_moves(char *moves) {
 }
 
 int thread_func(void *arg) {
-    SearchParameters *parameters = arg;
-    Move move;
-    search(&board, parameters, &move);
-    free(parameters);
+    Search *search = arg;
+    do_search(search, &board);
+    free(search);
     return 0;
 }
 
-void thread_start(SearchParameters *parameters) {
-    thrd_create(&thrd, thread_func, parameters);
+void thread_start(Search *search) {
+    thrd_create(&thrd, thread_func, search);
 }
 
 void handle_go(char *line) {
-    SearchParameters *parameters = malloc(sizeof(SearchParameters));
-    parameters->use_book = 1;
-    parameters->duration = 2;
+    Search *search = malloc(sizeof(Search));
+    search->use_book = 1;
+    search->duration = 2;
     char *key;
     char *token = tokenize(line, " ", &key);
     while (token) {
         if (strcmp(token, "infinite") == 0) {
-            parameters->duration = 0;
-            parameters->use_book = 0;
+            search->duration = 0;
+            search->use_book = 0;
         }
         else if (strcmp(token, "movetime") == 0) {
             char *arg = tokenize(NULL, " ", &key);
-            parameters->duration = atoi(arg) / 1000.0;
+            search->duration = atoi(arg) / 1000.0;
         }
         else if (strcmp(token, "ponder") == 0) {
             return; // no pondering yet
         }
         token = tokenize(NULL, " ", &key);
     }
-    thread_start(parameters);
+    thread_start(search);
 }
 
 void handle_stop() {
@@ -114,6 +114,9 @@ int parse_line() {
     }
     if (strcmp(line, "perft") == 0) {
         perft_tests();
+    }
+    if (strcmp(line, "bk") == 0) {
+        bk_tests();
     }
     return 1;
 }
