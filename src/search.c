@@ -19,7 +19,7 @@ void sort_moves(Search *search, Board *board, Move *moves, int count) {
     for (int i = 0; i < count; i++) {
         Move *move = moves + i;
         scores[i] = score_move(board, move);
-        if (best && memcmp(best, move, sizeof(Move)) == 0) {
+        if (best && best->src == move->src && best->dst == move->dst) {
             scores[i] += INF;
         }
         indexes[i] = i;
@@ -70,7 +70,7 @@ int quiesce(Search *search, Board *board, int alpha, int beta) {
     return alpha;
 }
 
-int alpha_beta(Search *search, Board *board, int depth, int alpha, int beta) {
+int alpha_beta(Search *search, Board *board, int depth, int ply, int alpha, int beta) {
     if (is_illegal(board)) {
         return INF;
     }
@@ -86,7 +86,7 @@ int alpha_beta(Search *search, Board *board, int depth, int alpha, int beta) {
     search->nodes++;
     Undo undo;
     do_null_move(board, &undo);
-    int score = -alpha_beta(search, board, depth - 1 - 2, -beta, -beta + 1);
+    int score = -alpha_beta(search, board, depth - 1 - 2, ply + 1, -beta, -beta + 1);
     undo_null_move(board, &undo);
     if (score >= beta) {
         table_set(&search->table, board->hash, depth, beta, TABLE_BETA);
@@ -100,9 +100,9 @@ int alpha_beta(Search *search, Board *board, int depth, int alpha, int beta) {
     for (int i = 0; i < count; i++) {
         Move *move = &moves[i];
         do_move(board, move, &undo);
-        int score = -alpha_beta(search, board, depth - 1, -beta, -alpha);
+        int score = -alpha_beta(search, board, depth - 1, ply + 1, -beta, -alpha);
         undo_move(board, move, &undo);
-        if (search->stop_flag) {
+        if (search->stop) {
             return 0;
         }
         if (score > -INF) {
@@ -121,7 +121,7 @@ int alpha_beta(Search *search, Board *board, int depth, int alpha, int beta) {
     }
     if (!can_move) {
         if (is_check(board)) {
-            return -MATE + search->root_depth - depth;
+            return -MATE + ply;
         }
         else {
             return 0;
@@ -131,7 +131,7 @@ int alpha_beta(Search *search, Board *board, int depth, int alpha, int beta) {
     return alpha;
 }
 
-int root_search(Search *search, Board *board, int depth, int alpha, int beta, Move *result) {
+int root_search(Search *search, Board *board, int depth, int ply, int alpha, int beta, Move *result) {
     Undo undo;
     Move moves[MAX_MOVES];
     int count = gen_moves(board, moves);
@@ -140,9 +140,9 @@ int root_search(Search *search, Board *board, int depth, int alpha, int beta, Mo
     for (int i = 0; i < count; i++) {
         Move *move = &moves[i];
         do_move(board, move, &undo);
-        int score = -alpha_beta(search, board, depth - 1, -beta, -alpha);
+        int score = -alpha_beta(search, board, depth - 1, ply + 1, -beta, -alpha);
         undo_move(board, move, &undo);
-        if (search->stop_flag) {
+        if (search->stop) {
             return 0;
         }
         if (score > alpha) {
@@ -177,7 +177,7 @@ void print_pv(Search *search, Board *board, int depth) {
 static int thread_func(void *arg) {
     Search *search = arg;
     sleep(search->duration);
-    search->stop_flag = 1;
+    search->stop = 1;
     return 0;
 }
 
@@ -194,7 +194,7 @@ int do_search(Search *search, Board *board) {
         printf("bestmove %s\n", move_string);
         return 1;
     }
-    search->stop_flag = 0;
+    search->stop = 0;
     int result = 1;
     table_alloc(&search->table, 20);
     double start = now();
@@ -205,14 +205,13 @@ int do_search(Search *search, Board *board) {
     int score = 0;
     search->nodes = 0;
     for (int depth = 1; depth < 100; depth++) {
-        search->root_depth = depth;
         int lo = 5;
         int hi = 5;
         while (1) {
             int alpha = score - lo;
             int beta = score + hi;
-            score = root_search(search, board, depth, alpha, beta, &search->move);
-            if (search->stop_flag) {
+            score = root_search(search, board, depth, 0, alpha, beta, &search->move);
+            if (search->stop) {
                 break;
             }
             if (score == alpha) {
@@ -225,7 +224,7 @@ int do_search(Search *search, Board *board) {
                 break;
             }
         }
-        if (search->stop_flag) {
+        if (search->stop) {
             break;
         }
         if (score == -INF) {
@@ -256,8 +255,4 @@ int do_search(Search *search, Board *board) {
     }
     table_free(&search->table);
     return result;
-}
-
-void stop_search() {
-    // search->stop_flag = 1;
 }

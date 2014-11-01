@@ -9,18 +9,19 @@
 #define MATE 100000
 
 typedef struct {
-    double duration;
-    int use_book;
-    int root_depth;
-    int nodes;
-    int score;
+    // input
     int uci;
+    int use_book;
+    double duration;
+    // output
     Move move;
+    // control
+    int stop;
+    // internal
+    int nodes;
     Table table;
-    volatile int stop_flag;
 } Search;
 
 int do_search(Search *search, Board *board);
-void stop_search();
 
 #endif

@@ -11,6 +11,7 @@
 #include "util.h"
 
 static Board board;
+static Search search;
 static thrd_t thrd;
 
 void handle_uci() {
@@ -44,42 +45,39 @@ void handle_startpos_moves(char *moves) {
 }
 
 static int thread_func(void *arg) {
-    Search *search = arg;
-    do_search(search, &board);
-    free(search);
+    do_search(&search, &board);
     return 0;
 }
 
-static void thread_start(Search *search) {
-    thrd_create(&thrd, thread_func, search);
+static void thread_start() {
+    thrd_create(&thrd, thread_func, NULL);
 }
 
 void handle_go(char *line) {
-    Search *search = malloc(sizeof(Search));
-    search->uci = 1;
-    search->use_book = 1;
-    search->duration = 4;
+    search.uci = 1;
+    search.use_book = 1;
+    search.duration = 4;
     char *key;
     char *token = tokenize(line, " ", &key);
     while (token) {
         if (strcmp(token, "infinite") == 0) {
-            search->duration = 0;
-            search->use_book = 0;
+            search.duration = 0;
+            search.use_book = 0;
         }
         else if (strcmp(token, "movetime") == 0) {
             char *arg = tokenize(NULL, " ", &key);
-            search->duration = atoi(arg) / 1000.0;
+            search.duration = atoi(arg) / 1000.0;
         }
         else if (strcmp(token, "ponder") == 0) {
             return; // no pondering yet
         }
         token = tokenize(NULL, " ", &key);
     }
-    thread_start(search);
+    thread_start();
 }
 
 void handle_stop() {
-    stop_search();
+    search.stop = 1;
     thrd_join(thrd, NULL);
 }
 

@@ -45,8 +45,7 @@ int table_get(Table *table, bb key, int depth, int alpha, int beta, int *value) 
         // if ((entry->flag == TABLE_EXACT) ||
         //     (entry->flag == TABLE_ALPHA && entry->value <= alpha) ||
         //     (entry->flag == TABLE_BETA && entry->value >= beta))
-        if (entry->flag == TABLE_EXACT)
-        {
+        if (entry->flag == TABLE_EXACT) {
             *value = entry->value;
             return 1;
         }
