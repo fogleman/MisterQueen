@@ -9,7 +9,7 @@ int bk_test(int index, char *fen, char *bm) {
     board_load_fen(&board, fen);
     Search search;
     search.uci = 0;
-    search.duration = 3;
+    search.duration = 1;
     do_search(&search, &board);
     char notation[16];
     notate_move(&board, &search.move, notation);
