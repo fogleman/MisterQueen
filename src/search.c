@@ -208,8 +208,8 @@ int do_search(Search *search, Board *board) {
     int score = 0;
     search->nodes = 0;
     for (int depth = 1; depth < 100; depth++) {
-        int lo = 5;
-        int hi = 5;
+        int lo = 20;
+        int hi = 20;
         while (1) {
             int alpha = score - lo;
             int beta = score + hi;
@@ -248,8 +248,11 @@ int do_search(Search *search, Board *board) {
             break;
         }
         if (score <= -MATE + depth || score >= MATE - depth) {
-            // break;
+            break;
         }
+    }
+    if (now() - start < 1) {
+        sleep(1);
     }
     if (search->uci) {
         char move_string[16];
