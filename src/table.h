@@ -6,9 +6,10 @@
 
 #define TABLE_ENTRY(table, key) ((table)->data + ((key) & (table)->mask))
 
-#define TABLE_EXACT 0
-#define TABLE_ALPHA 1
-#define TABLE_BETA 2
+#define TABLE_NONE 0
+#define TABLE_EXACT 1
+#define TABLE_ALPHA 2
+#define TABLE_BETA 3
 
 typedef struct {
     bb key;

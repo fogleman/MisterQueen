@@ -117,6 +117,10 @@ int parse_line() {
     if (strcmp(line, "bk") == 0) {
         bk_tests();
     }
+    int index;
+    if (sscanf(line, "test %d", &index) == 1) {
+        test_position(index);
+    }
     return 1;
 }
 
