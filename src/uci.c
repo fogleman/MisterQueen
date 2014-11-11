@@ -56,7 +56,7 @@ static void thread_start() {
 void handle_go(char *line) {
     search.uci = 1;
     search.use_book = 1;
-    search.duration = 4;
+    search.duration = 5;
     char *key;
     char *token = tokenize(line, " ", &key);
     while (token) {

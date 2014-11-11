@@ -25,6 +25,7 @@ void table_set_move(Table *table, bb key, int depth, Move *move) {
     if (entry->depth <= depth) {
         entry->key = key;
         entry->depth = depth;
+        entry->flag = TABLE_ALPHA;
         memcpy(&entry->move, move, sizeof(Move));
     }
 }
