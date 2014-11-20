@@ -84,6 +84,7 @@ typedef struct {
     bb white_kings;
     bb black_kings;
     bb hash;
+    bb pawn_hash;
 } Board;
 
 void board_clear(Board *board);

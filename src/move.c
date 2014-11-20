@@ -7,8 +7,10 @@
 
 #define TOGGLE_HASH(board) \
     board->hash ^= HASH_CASTLE[board->castle]; \
+    board->pawn_hash ^= HASH_CASTLE[board->castle]; \
     if (board->ep) { \
         board->hash ^= HASH_EP[LSB(board->ep) % 8]; \
+        board->pawn_hash ^= HASH_EP[LSB(board->ep) % 8]; \
     }
 
 void make_move(Board *board, Move *move) {
@@ -22,6 +24,7 @@ void do_null_move(Board *board, Undo *undo) {
     board->ep = 0L;
     board->color ^= BLACK;
     board->hash ^= HASH_COLOR;
+    board->pawn_hash ^= HASH_COLOR;
     TOGGLE_HASH(board);
 }
 
@@ -30,6 +33,7 @@ void undo_null_move(Board *board, Undo *undo) {
     board->ep = undo->ep;
     board->color ^= BLACK;
     board->hash ^= HASH_COLOR;
+    board->pawn_hash ^= HASH_COLOR;
     TOGGLE_HASH(board);
 }
 
@@ -103,6 +107,7 @@ void do_move(Board *board, Move *move, Undo *undo) {
     }
     board->color ^= BLACK;
     board->hash ^= HASH_COLOR;
+    board->pawn_hash ^= HASH_COLOR;
     TOGGLE_HASH(board);
 }
 
@@ -144,6 +149,7 @@ void undo_move(Board *board, Move *move, Undo *undo) {
     }
     board->color ^= BLACK;
     board->hash ^= HASH_COLOR;
+    board->pawn_hash ^= HASH_COLOR;
     TOGGLE_HASH(board);
 }
 

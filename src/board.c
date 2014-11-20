@@ -45,6 +45,7 @@ void board_set(Board *board, int sq, int piece) {
                     board->black_material -= MATERIAL_PAWN;
                     board->black_position -= POSITION_BLACK_PAWN[sq];
                     board->hash ^= HASH_BLACK_PAWN[sq];
+                    board->pawn_hash ^= HASH_BLACK_PAWN[sq];
                     break;
                 case KNIGHT:
                     board->black_knights &= mask;
@@ -75,6 +76,7 @@ void board_set(Board *board, int sq, int piece) {
                     board->black_material -= MATERIAL_KING;
                     board->black_position -= POSITION_BLACK_KING[sq];
                     board->hash ^= HASH_BLACK_KING[sq];
+                    board->pawn_hash ^= HASH_BLACK_KING[sq];
                     break;
             }
         }
@@ -86,6 +88,7 @@ void board_set(Board *board, int sq, int piece) {
                     board->white_material -= MATERIAL_PAWN;
                     board->white_position -= POSITION_WHITE_PAWN[sq];
                     board->hash ^= HASH_WHITE_PAWN[sq];
+                    board->pawn_hash ^= HASH_WHITE_PAWN[sq];
                     break;
                 case KNIGHT:
                     board->white_knights &= mask;
@@ -116,6 +119,7 @@ void board_set(Board *board, int sq, int piece) {
                     board->white_material -= MATERIAL_KING;
                     board->white_position -= POSITION_WHITE_KING[sq];
                     board->hash ^= HASH_WHITE_KING[sq];
+                    board->pawn_hash ^= HASH_WHITE_KING[sq];
                     break;
             }
         }
@@ -131,6 +135,7 @@ void board_set(Board *board, int sq, int piece) {
                     board->black_material += MATERIAL_PAWN;
                     board->black_position += POSITION_BLACK_PAWN[sq];
                     board->hash ^= HASH_BLACK_PAWN[sq];
+                    board->pawn_hash ^= HASH_BLACK_PAWN[sq];
                     break;
                 case KNIGHT:
                     board->black_knights |= bit;
@@ -161,6 +166,7 @@ void board_set(Board *board, int sq, int piece) {
                     board->black_material += MATERIAL_KING;
                     board->black_position += POSITION_BLACK_KING[sq];
                     board->hash ^= HASH_BLACK_KING[sq];
+                    board->pawn_hash ^= HASH_BLACK_KING[sq];
                     break;
             }
         }
@@ -172,6 +178,7 @@ void board_set(Board *board, int sq, int piece) {
                     board->white_material += MATERIAL_PAWN;
                     board->white_position += POSITION_WHITE_PAWN[sq];
                     board->hash ^= HASH_WHITE_PAWN[sq];
+                    board->pawn_hash ^= HASH_WHITE_PAWN[sq];
                     break;
                 case KNIGHT:
                     board->white_knights |= bit;
@@ -202,6 +209,7 @@ void board_set(Board *board, int sq, int piece) {
                     board->white_material += MATERIAL_KING;
                     board->white_position += POSITION_WHITE_KING[sq];
                     board->hash ^= HASH_WHITE_KING[sq];
+                    board->pawn_hash ^= HASH_WHITE_KING[sq];
                     break;
             }
         }
@@ -274,8 +282,14 @@ void board_load_fen(Board *board, char *fen) {
     }
     i++;
     switch (fen[i++]) {
-        case 'w': board->color = WHITE; break;
-        case 'b': board->color = BLACK; board->hash ^= HASH_COLOR; break;
+        case 'w':
+            board->color = WHITE;
+            break;
+        case 'b':
+            board->color = BLACK;
+            board->hash ^= HASH_COLOR;
+            board->pawn_hash ^= HASH_COLOR;
+            break;
         default: return;
     }
     i++;
@@ -297,6 +311,8 @@ void board_load_fen(Board *board, char *fen) {
     }
     board->hash ^= HASH_CASTLE[CASTLE_ALL];
     board->hash ^= HASH_CASTLE[board->castle];
+    board->pawn_hash ^= HASH_CASTLE[CASTLE_ALL];
+    board->pawn_hash ^= HASH_CASTLE[board->castle];
     i++;
     if (fen[i] == '-') {
         i++;
@@ -308,6 +324,7 @@ void board_load_fen(Board *board, char *fen) {
             int ep_rank = fen[i] - '1';
             board->ep = BIT(RF(ep_rank, ep_file));
             board->hash ^= HASH_EP[LSB(board->ep) % 8];
+            board->pawn_hash ^= HASH_EP[LSB(board->ep) % 8];
             i++;
         }
     }
