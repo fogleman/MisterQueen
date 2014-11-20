@@ -43,7 +43,12 @@ int quiesce(Search *search, Board *board, int alpha, int beta) {
     if (is_illegal(board)) {
         return INF;
     }
-    int score = evaluate(board);
+    int pawn_score = 0;
+    if (!pawn_table_get(&search->pawn_table, board->hash, &pawn_score)) {
+        pawn_score = evaluate_pawns(board);
+        pawn_table_set(&search->pawn_table, board->hash, pawn_score);
+    }
+    int score = evaluate(board) + pawn_score;
     if (score >= beta) {
         return beta;
     }
@@ -200,6 +205,7 @@ int do_search(Search *search, Board *board) {
     search->stop = 0;
     int result = 1;
     table_alloc(&search->table, 20);
+    pawn_table_alloc(&search->pawn_table, 10);
     double start = now();
     double duration = search->duration;
     if (duration > 0) {
@@ -260,5 +266,6 @@ int do_search(Search *search, Board *board) {
         printf("bestmove %s\n", move_string);
     }
     table_free(&search->table);
+    pawn_table_free(&search->pawn_table);
     return result;
 }

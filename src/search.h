@@ -20,6 +20,7 @@ typedef struct {
     // internal
     int nodes;
     Table table;
+    PawnTable pawn_table;
 } Search;
 
 int do_search(Search *search, Board *board);

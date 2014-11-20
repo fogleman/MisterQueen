@@ -52,3 +52,27 @@ int table_get(Table *table, bb key, int depth, int alpha, int beta, int *value) 
     }
     return 0;
 }
+
+void pawn_table_alloc(PawnTable *table, int bits) {
+    table->size = 1 << bits;
+    table->mask = table->size - 1;
+    table->data = calloc(table->size, sizeof(PawnEntry));
+}
+
+void pawn_table_free(PawnTable *table) {
+    free(table->data);
+}
+
+int pawn_table_get(PawnTable *table, bb key, int *value) {
+    PawnEntry *entry = TABLE_ENTRY(table, key);
+    if (entry->key == key) {
+        *value = entry->value;
+        return 1;
+    }
+    return 0;
+}
+
+void pawn_table_set(PawnTable *table, bb key, int value) {
+    PawnEntry *entry = TABLE_ENTRY(table, key);
+    entry->value = value;
+}
