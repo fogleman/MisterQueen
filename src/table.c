@@ -74,5 +74,6 @@ int pawn_table_get(PawnTable *table, bb key, int *value) {
 
 void pawn_table_set(PawnTable *table, bb key, int value) {
     PawnEntry *entry = TABLE_ENTRY(table, key);
+    entry->key = key;
     entry->value = value;
 }
