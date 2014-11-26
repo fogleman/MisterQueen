@@ -15,7 +15,7 @@ static Search search;
 static thrd_t thrd;
 
 void handle_uci() {
-    printf("id name Chess\n");
+    printf("id name Mister Queen\n");
     printf("id author Michael Fogleman\n");
     printf("uciok\n");
 }
