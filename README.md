@@ -1,3 +1,5 @@
+![alt tag](http://i.imgur.com/kjJK4cs.png)
+
 ## Mister Queen
 
 Mr. Queen is a chess engine written in C.
