@@ -19,3 +19,7 @@ Mr. Queen is a chess engine written in C.
 
 * Unaware of draw by repetition.
 * Basic evaluation includes only material and piece-square values.
+
+---
+
+<p align="center"><img src="http://i.imgur.com/oiWiEvK.png"></p>
