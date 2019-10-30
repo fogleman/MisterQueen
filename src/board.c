@@ -9,9 +9,9 @@ void board_clear(Board *board) {
 
 void board_reset(Board *board) {
     board_clear(board);
-    for (int file = 0; file < 8; file++) {
-        board_set(board, RF(1, file), WHITE_PAWN);
-        board_set(board, RF(6, file), BLACK_PAWN);
+    for (int f = 1; f <= 8; f++) {
+        board_set(board, RF(1, f), WHITE_PAWN);
+        board_set(board, RF(6, f), BLACK_PAWN);
     }
     board_set(board, RF(0, 0), WHITE_ROOK);
     board_set(board, RF(0, 1), WHITE_KNIGHT);
@@ -30,6 +30,7 @@ void board_reset(Board *board) {
     board_set(board, RF(7, 6), BLACK_KNIGHT);
     board_set(board, RF(7, 7), BLACK_ROOK);
 }
+
 
 void board_set(Board *board, int sq, int piece) {
     int previous = board->squares[sq];
@@ -80,7 +81,8 @@ void board_set(Board *board, int sq, int piece) {
                     break;
             }
         }
-        else {
+        else 
+          {
             board->white &= mask;
             switch (PIECE(previous)) {
                 case PAWN:
@@ -170,7 +172,8 @@ void board_set(Board *board, int sq, int piece) {
                     break;
             }
         }
-        else {
+        else 
+           {
             board->white |= bit;
             switch (PIECE(piece)) {
                 case PAWN:
@@ -246,7 +249,7 @@ void board_load_fen(Board *board, char *fen) {
     int n = strlen(fen);
     int rank = 7;
     int file = 0;
-    for (; i < n; i++) {
+    for (i=0; i < n; i++) {
         int done = 0;
         switch (fen[i]) {
             case 'P': board_set(board, RF(rank, file++), WHITE_PAWN); break;
@@ -297,12 +300,18 @@ void board_load_fen(Board *board, char *fen) {
     for (; i < n; i++) {
         int done = 0;
         switch (fen[i]) {
-            case 'K': board->castle |= CASTLE_WHITE_KING; break;
-            case 'Q': board->castle |= CASTLE_WHITE_QUEEN; break;
-            case 'k': board->castle |= CASTLE_BLACK_KING; break;
-            case 'q': board->castle |= CASTLE_BLACK_QUEEN; break;
-            case '-': done = 1; break;
-            case ' ': done = 1; break;
+            case 'K': board->castle |= CASTLE_WHITE_KING; 
+                      break;
+            case 'Q': board->castle |= CASTLE_WHITE_QUEEN;  
+                      break;
+            case 'k': board->castle |= CASTLE_BLACK_KING; 
+                      break;
+            case 'q': board->castle |= CASTLE_BLACK_QUEEN;
+                      break;
+            case '-': done = 1; 
+                      break;
+            case ' ': done = 1; 
+                      break;
             default: return;
         }
         if (done) {
